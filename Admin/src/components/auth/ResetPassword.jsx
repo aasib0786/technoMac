@@ -23,9 +23,9 @@ const ResetPassword = () => {
       return;
     }
 
-    const response = await postData('api/admin/reset-password', { token, new_password: password, });
-
-    if (response?.status) {
+    const response = await postData(`admin/reset-password/${token}`, { newPassword: password, });
+    console.log("response===>", response)
+    if (response?.success === true) {
       toast.success('Password reset successfully!');
       navigate('/login');
     } else {

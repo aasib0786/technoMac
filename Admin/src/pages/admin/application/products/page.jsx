@@ -431,7 +431,7 @@ export default function ProductsManagement() {
                   <h3 className="font-semibold text-gray-900 mb-0.5">{product.name}</h3>
                   <p className="text-xs text-gray-500 mb-1">Model: {product.model}</p>
                   <p className="text-sm text-gray-600 mt-1 mb-2 line-clamp-2">{product.description}</p>
-                  <p className="text-sm font-semibold text-green-600 mb-3">₹{product.price}</p>
+                  {/* <p className="text-sm font-semibold text-green-600 mb-3">₹{product.price}</p> */}
 
                   <div className="flex space-x-2">
                     <Button onClick={() => handleEdit(product)}

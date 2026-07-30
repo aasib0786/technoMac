@@ -248,7 +248,7 @@ const Login = () => {
               {loading ? 'Loading...' : 'Login'}
             </button>
 
-            <div
+            {/* <div
               className="back-to-login"
               style={{ textAlign: 'center', marginTop: '12px' }}
             >
@@ -258,7 +258,7 @@ const Login = () => {
               >
                 New here? Register
               </p>
-            </div>
+            </div> */}
           </form>
         )}
 
@@ -287,7 +287,7 @@ const Login = () => {
         )}
 
         {/* ── STEP 3: REGISTER ────────────────────────────────── */}
-        {step === 3 && (
+        {/* {step === 3 && (
           <form onSubmit={handleRegister} className="login-form">
             <div className="form-group">
               <label>Email</label>
@@ -332,10 +332,10 @@ const Login = () => {
               <p onClick={() => setStep(1)}>← Back to Login</p>
             </div>
           </form>
-        )}
+        )} */}
 
         {/* ── STEP 4: VERIFY OTP ──────────────────────────────── */}
-        {step === 4 && (
+        {/* {step === 4 && (
           <form onSubmit={handleVerifyOTP} className="login-form">
             <div className="form-group">
               <label>Enter OTP</label>
@@ -371,7 +371,7 @@ const Login = () => {
               <p onClick={() => setStep(3)}>← Back to Register</p>
             </div>
           </form>
-        )}
+        )} */}
       </div>
     </div>
   );

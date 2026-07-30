@@ -224,8 +224,8 @@ exports.forgotPassword = async (req, res) => {
     admin.resetPasswordExpires = Date.now() + 15 * 60 * 1000;
     await admin.save();
 
-    const resetURL = `${req.protocol}://${req.get('host')}/api/admin/reset-password/${resetToken}`;
-
+    const resetURL = `https://admin.technomacmedical.com/admin/reset-password/${resetToken}`;
+    // const resetURL = `http://localhost:3001/admin/reset-password/${resetToken}`;
     await sendEmail(
       email,
       'Password Reset Request',

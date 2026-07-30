@@ -191,8 +191,8 @@ export default function ProductsManagement() {
   // ── Submit ────────────────────────────────────────────────────────────────
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!formData.category)    return toast.error('Please select a Category');
-    if (!formData.subCategory) return toast.error('Please select a Sub-Category');
+    // if (!formData.category)    return toast.error('Please select a Category');
+    // if (!formData.subCategory) return toast.error('Please select a Sub-Category');
 
     setIsLoading(true);
     try {
@@ -431,7 +431,7 @@ export default function ProductsManagement() {
                   <h3 className="font-semibold text-gray-900 mb-0.5">{product.name}</h3>
                   <p className="text-xs text-gray-500 mb-1">Model: {product.model}</p>
                   <p className="text-sm text-gray-600 mt-1 mb-2 line-clamp-2">{product.description}</p>
-                  <p className="text-sm font-semibold text-green-600 mb-3">₹{product.price}</p>
+                  {/* <p className="text-sm font-semibold text-green-600 mb-3">₹{product.price}</p> */}
 
                   <div className="flex space-x-2">
                     <Button onClick={() => handleEdit(product)}
@@ -503,7 +503,7 @@ export default function ProductsManagement() {
 
                     {/* Parent Category */}
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Parent Category</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Parent Category *</label>
                       <div className="relative">
                         <select value={formData.parentCategoryId}
                           onChange={(e) => setFormData({ ...formData, parentCategoryId: e.target.value, category: '', subCategory: '' })}
@@ -523,7 +523,7 @@ export default function ProductsManagement() {
                         <label className="block text-sm font-medium text-gray-700 mb-1">Category *</label>
                         <div className="relative">
                           {/* ✅ FIX: removed <p> and <pre> debug elements from inside <select> */}
-                          <select value={formData.category} required
+                          <select value={formData.category}
                             onChange={(e) => setFormData({ ...formData, category: e.target.value, subCategory: '' })}
                             className="w-full px-3 py-2 pr-8 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 appearance-none text-sm">
                             <option value="">Select Category</option>
@@ -537,9 +537,9 @@ export default function ProductsManagement() {
 
                       {/* SubCategory */}
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Sub-Category *</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Sub-Category</label>
                         <div className="relative">
-                          <select value={formData.subCategory} required
+                          <select value={formData.subCategory}
                             onChange={(e) => setFormData({ ...formData, subCategory: e.target.value })}
                             disabled={!formData.category || subCategoriesList.length === 0}
                             className="w-full px-3 py-2 pr-8 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 appearance-none text-sm disabled:bg-gray-100 disabled:cursor-not-allowed">
@@ -557,12 +557,12 @@ export default function ProductsManagement() {
                   </div>
 
                   {/* Price */}
-                  <div>
+                  {/* <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Price (₹) *</label>
                     <input type="number" value={formData.price} required min="0" step="0.01"
                       onChange={(e) => setFormData({ ...formData, price: e.target.value })}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm" />
-                  </div>
+                  </div> */}
 
                   {/* Features */}
                   <div>

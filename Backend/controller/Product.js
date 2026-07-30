@@ -40,22 +40,25 @@ const populateProduct = (query) =>
 exports.createProduct = async (req, res) => {
   try {
     const { name, category, subCategory, model, description, price, features, specifications, isFeatured } = req.body;
-
+    console.log("AAAAA===>", req.body)
     if (!name?.trim()) return res.status(400).json({ success: false, message: 'Name is required' });
-    if (!category) return res.status(400).json({ success: false, message: 'Category is required' });
-    if (!subCategory) return res.status(400).json({ success: false, message: 'Sub-Category is required' });
-    if (!model?.trim()) return res.status(400).json({ success: false, message: 'Model is required' });
 
-    // ✅ Duplicate model check
-    const existing = await Product.findOne({ model: model.trim() });
-    if (existing) {
-      return res.status(400).json({ success: false, message: 'Product with this model already exists' });
+    // ✅ Duplicate model check — only runs if a model was actually provided
+    const cleanModel = model?.trim() || undefined;
+    if (cleanModel) {
+      const existing = await Product.findOne({ model: cleanModel });
+      if (existing) {
+        return res.status(400).json({ success: false, message: 'Product with this model already exists' });
+      }
     }
 
-    // ✅ Auto-fetch parentCategoryId from category
-    const categoryDoc = await Category.findById(category);
-    if (!categoryDoc) return res.status(404).json({ success: false, message: 'Category not found' });
-    const parentCategoryId = categoryDoc.parentCategoryId;
+    // ✅ Auto-fetch parentCategoryId from category, only if category is given
+    let parentCategoryId = null;
+    if (category) {
+      const categoryDoc = await Category.findById(category);
+      if (!categoryDoc) return res.status(404).json({ success: false, message: 'Category not found' });
+      parentCategoryId = categoryDoc.parentCategoryId;
+    }
 
     const images = req.files?.length > 0
       ? await uploadMultiple(req.files, 'products')
@@ -63,10 +66,10 @@ exports.createProduct = async (req, res) => {
 
     const product = await Product.create({
       name: name.trim(),
-      parentCategoryId,
-      category,
-      subCategory,
-      model: model.trim(),
+      parentCategoryId: parentCategoryId || undefined,
+      category: category || undefined,
+      subCategory: subCategory || undefined,
+      model: cleanModel,
       description: description?.trim() || '',
       price: price || 0,
       images,
@@ -173,30 +176,65 @@ exports.getFeaturedProducts = async (req, res) => {
 exports.updateProduct = async (req, res) => {
   try {
     const { name, category, subCategory, model, description, price, features, specifications, isFeatured, isActive } = req.body;
-
+    console.log("AAAAA===>", req.body)
     // ✅ Duplicate model check (exclude current product)
-    if (model) {
-      const existing = await Product.findOne({ model: model.trim(), _id: { $ne: req.params.id } });
+    // Treat "" the same as "not provided" so an empty string never gets
+    // compared/saved as a real model value
+    const cleanModel = model?.trim() || undefined;
+    if (cleanModel) {
+      const existing = await Product.findOne({ model: cleanModel, _id: { $ne: req.params.id } });
       if (existing) {
         return res.status(400).json({ success: false, message: 'Product with this model already exists' });
       }
     }
 
     const updateData = {};
+    const unsetData = {};
+
     if (name !== undefined) updateData.name = name.trim();
-    if (model !== undefined) updateData.model = model.trim();
     if (description !== undefined) updateData.description = description.trim();
-    if (price !== undefined) updateData.price = price;
     if (isFeatured !== undefined) updateData.isFeatured = isFeatured === 'true' || isFeatured === true;
     if (isActive !== undefined) updateData.isActive = isActive === 'true' || isActive === true;
 
-    // ✅ If category changed, auto-update parentCategoryId
-    if (category !== undefined) {
-      updateData.category = category;
-      const categoryDoc = await Category.findById(category);
-      if (categoryDoc) updateData.parentCategoryId = categoryDoc.parentCategoryId;
+    if (price !== undefined) {
+      const cleanPrice = Number(price);
+      if (Number.isNaN(cleanPrice) || cleanPrice < 0) {
+        return res.status(400).json({ success: false, message: 'Price must be a valid non-negative number' });
+      }
+      updateData.price = cleanPrice;
     }
-    if (subCategory !== undefined) updateData.subCategory = subCategory;
+
+    // model: set it if provided, or explicitly $unset it if cleared to ""
+    // (avoids saving "" and silently violating the sparse unique index
+    // once a second product also has model: "")
+    if (model !== undefined) {
+      if (cleanModel) {
+        updateData.model = cleanModel;
+      } else {
+        unsetData.model = '';
+      }
+    }
+
+    // ✅ If category changed, auto-update parentCategoryId (mirrors createProduct)
+    if (category !== undefined) {
+      if (category) {
+        const categoryDoc = await Category.findById(category);
+        if (!categoryDoc) return res.status(404).json({ success: false, message: 'Category not found' });
+        updateData.category = category;
+        updateData.parentCategoryId = categoryDoc.parentCategoryId;
+      } else {
+        unsetData.category = '';
+        unsetData.parentCategoryId = '';
+      }
+    }
+
+    if (subCategory !== undefined) {
+      if (subCategory) {
+        updateData.subCategory = subCategory;
+      } else {
+        unsetData.subCategory = '';
+      }
+    }
 
     if (req.files?.length > 0) {
       updateData.images = await uploadMultiple(req.files, 'products');
@@ -207,8 +245,10 @@ exports.updateProduct = async (req, res) => {
     if (parsedSpecs !== null) updateData.specifications = parsedSpecs;
     if (parsedFeatures !== null) updateData.features = parsedFeatures;
 
+    const updateOps = { $set: updateData };
+    if (Object.keys(unsetData).length > 0) updateOps.$unset = unsetData;
     const product = await populateProduct(
-      Product.findByIdAndUpdate(req.params.id, updateData, { new: true, runValidators: true })
+      Product.findByIdAndUpdate(req.params.id, updateOps, { new: true, runValidators: true })
     );
     if (!product) return res.status(404).json({ success: false, message: 'Product not found' });
 

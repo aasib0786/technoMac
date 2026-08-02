@@ -98,12 +98,12 @@ export default function ProductsManagement() {
     try {
       setIsLoading(true);
       const params = new URLSearchParams();
-      if (filters.search)           params.append('q', filters.search);
+      if (filters.search) params.append('q', filters.search);
       if (filters.parentCategoryId) params.append('parentCategoryId', filters.parentCategoryId);
-      if (filters.category)         params.append('category', filters.category);
-      if (filters.subCategory)      params.append('subCategory', filters.subCategory);
-      if (filters.minPrice)         params.append('minPrice', filters.minPrice);
-      if (filters.maxPrice)         params.append('maxPrice', filters.maxPrice);
+      if (filters.category) params.append('category', filters.category);
+      if (filters.subCategory) params.append('subCategory', filters.subCategory);
+      if (filters.minPrice) params.append('minPrice', filters.minPrice);
+      if (filters.maxPrice) params.append('maxPrice', filters.maxPrice);
 
       if (!params.toString()) { fetchProducts(); return; }
 
@@ -431,7 +431,7 @@ export default function ProductsManagement() {
                   <h3 className="font-semibold text-gray-900 mb-0.5">{product.name}</h3>
                   <p className="text-xs text-gray-500 mb-1">Model: {product.model}</p>
                   <p className="text-sm text-gray-600 mt-1 mb-2 line-clamp-2">{product.description}</p>
-                  {/* <p className="text-sm font-semibold text-green-600 mb-3">₹{product.price}</p> */}
+                  <p className="text-sm font-semibold text-green-600 mb-3">₹{product.price}</p>
 
                   <div className="flex space-x-2">
                     <Button onClick={() => handleEdit(product)}
@@ -439,11 +439,10 @@ export default function ProductsManagement() {
                       <i className="ri-edit-line mr-1"></i>Edit
                     </Button>
                     <Button onClick={() => toggleStatus(product)}
-                      className={`flex-1 text-sm font-medium flex items-center justify-center gap-1.5 border ${
-                        product.isActive
+                      className={`flex-1 text-sm font-medium flex items-center justify-center gap-1.5 border ${product.isActive
                           ? 'bg-orange-50 text-orange-600 border-orange-200 hover:bg-orange-100'
                           : 'bg-green-50 text-green-600 border-green-200 hover:bg-green-100'
-                      }`}>
+                        }`}>
                       <i className={`text-sm ${product.isActive ? 'ri-toggle-fill' : 'ri-toggle-line'}`}></i>
                       {product.isActive ? 'Deactivate' : 'Activate'}
                     </Button>
@@ -557,12 +556,12 @@ export default function ProductsManagement() {
                   </div>
 
                   {/* Price */}
-                  {/* <div>
+                  <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Price (₹) *</label>
                     <input type="number" value={formData.price} required min="0" step="0.01"
                       onChange={(e) => setFormData({ ...formData, price: e.target.value })}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm" />
-                  </div> */}
+                  </div>
 
                   {/* Features */}
                   <div>

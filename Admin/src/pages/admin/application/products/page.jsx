@@ -440,8 +440,8 @@ export default function ProductsManagement() {
                     </Button>
                     <Button onClick={() => toggleStatus(product)}
                       className={`flex-1 text-sm font-medium flex items-center justify-center gap-1.5 border ${product.isActive
-                          ? 'bg-orange-50 text-orange-600 border-orange-200 hover:bg-orange-100'
-                          : 'bg-green-50 text-green-600 border-green-200 hover:bg-green-100'
+                        ? 'bg-orange-50 text-orange-600 border-orange-200 hover:bg-orange-100'
+                        : 'bg-green-50 text-green-600 border-green-200 hover:bg-green-100'
                         }`}>
                       <i className={`text-sm ${product.isActive ? 'ri-toggle-fill' : 'ri-toggle-line'}`}></i>
                       {product.isActive ? 'Deactivate' : 'Activate'}
@@ -483,8 +483,8 @@ export default function ProductsManagement() {
 
                   {/* Model */}
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Model *</label>
-                    <input type="text" value={formData.model} required
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Model </label>
+                    <input type="text" value={formData.model}
                       onChange={(e) => setFormData({ ...formData, model: e.target.value })}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm" />
                   </div>
@@ -505,6 +505,7 @@ export default function ProductsManagement() {
                       <label className="block text-sm font-medium text-gray-700 mb-1">Parent Category *</label>
                       <div className="relative">
                         <select value={formData.parentCategoryId}
+                          // required
                           onChange={(e) => setFormData({ ...formData, parentCategoryId: e.target.value, category: '', subCategory: '' })}
                           className="w-full px-3 py-2 pr-8 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 appearance-none text-sm">
                           <option value="">All Parent Categories</option>
@@ -523,6 +524,7 @@ export default function ProductsManagement() {
                         <div className="relative">
                           {/* ✅ FIX: removed <p> and <pre> debug elements from inside <select> */}
                           <select value={formData.category}
+                            // required
                             onChange={(e) => setFormData({ ...formData, category: e.target.value, subCategory: '' })}
                             className="w-full px-3 py-2 pr-8 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 appearance-none text-sm">
                             <option value="">Select Category</option>
@@ -558,7 +560,7 @@ export default function ProductsManagement() {
                   {/* Price */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Price (₹) *</label>
-                    <input type="number" value={formData.price} required min="0" step="0.01"
+                    <input type="number" value={formData.price} min="0" step="0.01"
                       onChange={(e) => setFormData({ ...formData, price: e.target.value })}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm" />
                   </div>

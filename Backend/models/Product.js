@@ -83,12 +83,12 @@ const ProductSchema = new mongoose.Schema(
     images: [{ type: String }],
     model: {
       type: String,
-      trim: true,
-      // sparse: lets multiple products have NO model without violating
-      // the unique constraint — a plain unique index only allows ONE
-      // document with a missing/null value, sparse allows many
-      unique: true,
-      sparse: true,
+      // trim: true,
+      // // sparse: lets multiple products have NO model without violating
+      // // the unique constraint — a plain unique index only allows ONE
+      // // document with a missing/null value, sparse allows many
+      // unique: true,
+      // sparse: true,
     },
     description: {
       type: String,

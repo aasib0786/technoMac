@@ -36,59 +36,10 @@ const populateProduct = (query) =>
     .populate('category', 'name')
     .populate('subCategory', 'name');
 
-// // ── CREATE ───────────────────────────────────────────────────────────────────
-// exports.createProduct = async (req, res) => {
-//   try {
-//     const { name, category, subCategory, model, description, price, features, specifications, isFeatured } = req.body;
-//     console.log("AAAAA===>", req.body)
-//     if (!name?.trim()) return res.status(400).json({ success: false, message: 'Name is required' });
-
-//     // ✅ Duplicate Name check — only runs if a Name was actually provided
-//     const cleanName = name?.trim() || undefined;
-//     if (cleanName) {
-//       const existing = await Product.findOne({ name: cleanName });
-//       if (existing) {
-//         return res.status(400).json({ success: false, message: 'Product with this Name already exists' });
-//       }
-//     }
-
-//     // ✅ Auto-fetch parentCategoryId from category, only if category is given
-//     let parentCategoryId = null;
-//     if (category) {
-//       const categoryDoc = await Category.findById(category);
-//       if (!categoryDoc) return res.status(404).json({ success: false, message: 'Category not found' });
-//       parentCategoryId = categoryDoc.parentCategoryId;
-//     }
-
-//     const images = req.files?.length > 0
-//       ? await uploadMultiple(req.files, 'products')
-//       : [];
-
-//     const product = await Product.create({
-//       name: name.trim(),
-//       parentCategoryId: parentCategoryId || undefined,
-//       category: category || undefined,
-//       subCategory: subCategory || undefined,
-//       model: model.trim() || '',
-//       description: description?.trim() || '',
-//       price: price || 0,
-//       images,
-//       specifications: parseJSON(specifications),
-//       features: parseJSON(features),
-//       isFeatured: isFeatured === 'true' || isFeatured === true,
-//     });
-
-//     const populated = await populateProduct(Product.findById(product._id));
-//     res.status(201).json({ success: true, message: 'Product created', data: populated });
-//   } catch (error) {
-//     console.error('createProduct:', error);
-//     res.status(500).json({ success: false, message: error.message });
-//   }
-// };
-
+// ── CREATE ───────────────────────────────────────────────────────────────────
 exports.createProduct = async (req, res) => {
   try {
-    const { name, category, subCategory, model, description, price, features, specifications, isFeatured } = req.body;
+    const { name, category, subCategory, sku, model, description, price, features, specifications, isFeatured } = req.body;
 
     if (!name?.trim()) return res.status(400).json({ success: false, message: 'Name is required' });
 
@@ -109,15 +60,6 @@ exports.createProduct = async (req, res) => {
       parentCategoryId = categoryDoc.parentCategoryId;
     }
 
-    // // ✅ Price validation (matches updateProduct)
-    // let cleanPrice = 0;
-    // if (price !== undefined) {
-    //   cleanPrice = Number(price);
-    //   if (Number.isNaN(cleanPrice) || cleanPrice < 0) {
-    //     return res.status(400).json({ success: false, message: 'Price must be a valid non-negative number' });
-    //   }
-    // }
-
     const images = req.files?.length > 0
       ? await uploadMultiple(req.files, 'products')
       : [];
@@ -127,7 +69,7 @@ exports.createProduct = async (req, res) => {
       parentCategoryId: parentCategoryId || undefined,
       category: category || undefined,
       subCategory: subCategory || undefined,
-      model: model?.trim() || '', // ✅ fixed — was model.trim(), crashed when model was omitted
+      sku: sku || model || '',
       description: description?.trim() || '',
       price: price || 0,
       images,
@@ -192,7 +134,7 @@ exports.getProductsByParentCategory = async (req, res) => {
     }
 
     const products = await Product.find({
-      parentCategoryId: parentId, // ✅ Mongoose converts string to ObjectId automatically
+      parentCategoryId: parentId,
       isActive: true,
     })
       .populate('parentCategoryId', 'name image')
@@ -230,107 +172,22 @@ exports.getFeaturedProducts = async (req, res) => {
   }
 };
 
-// // ── UPDATE ────────────────────────────────────────────────────────────────────
-// exports.updateProduct = async (req, res) => {
-//   try {
-//     const { name, category, subCategory, model, description, price, features, specifications, isFeatured, isActive } = req.body;
-//     console.log("AAAAA===>", req.body)
-//     // ✅ Duplicate name check (exclude current product)
-//     // Treat "" the same as "not provided" so an empty string never gets
-//     // compared/saved as a real name value
-//     const cleanName = name?.trim() || undefined;
-//     if (cleanName) {
-//       const existing = await Product.findOne({ name: cleanName, _id: { $ne: req.params.id } });
-//       if (existing) {
-//         return res.status(400).json({ success: false, message: 'Product with this Name already exists' });
-//       }
-//     }
-
-//     const updateData = {};
-//     const unsetData = {};
-
-//     if (name !== undefined) updateData.name = name.trim();
-//     if (description !== undefined) updateData.description = description.trim();
-//     if (isFeatured !== undefined) updateData.isFeatured = isFeatured === 'true' || isFeatured === true;
-//     if (isActive !== undefined) updateData.isActive = isActive === 'true' || isActive === true;
-
-//     if (price !== undefined) {
-//       const cleanPrice = Number(price);
-//       if (Number.isNaN(cleanPrice) || cleanPrice < 0) {
-//         return res.status(400).json({ success: false, message: 'Price must be a valid non-negative number' });
-//       }
-//       updateData.price = cleanPrice;
-//     }
-
-//     // model: set it if provided, or explicitly $unset it if cleared to ""
-//     // (avoids saving "" and silently violating the sparse unique index
-//     // once a second product also has model: "")
-//     if (name !== undefined) {
-//       if (cleanModel) {
-//         updateData.model = cleanModel;
-//       } else {
-//         unsetData.model = '';
-//       }
-//     }
-
-//     // ✅ If category changed, auto-update parentCategoryId (mirrors createProduct)
-//     if (category !== undefined) {
-//       if (category) {
-//         const categoryDoc = await Category.findById(category);
-//         if (!categoryDoc) return res.status(404).json({ success: false, message: 'Category not found' });
-//         updateData.category = category;
-//         updateData.parentCategoryId = categoryDoc.parentCategoryId;
-//       } else {
-//         unsetData.category = '';
-//         unsetData.parentCategoryId = '';
-//       }
-//     }
-
-//     if (subCategory !== undefined) {
-//       if (subCategory) {
-//         updateData.subCategory = subCategory;
-//       } else {
-//         unsetData.subCategory = '';
-//       }
-//     }
-
-//     if (req.files?.length > 0) {
-//       updateData.images = await uploadMultiple(req.files, 'products');
-//     }
-
-//     const parsedSpecs = parseJSON(specifications, null);
-//     const parsedFeatures = parseJSON(features, null);
-//     if (parsedSpecs !== null) updateData.specifications = parsedSpecs;
-//     if (parsedFeatures !== null) updateData.features = parsedFeatures;
-
-//     const updateOps = { $set: updateData };
-//     if (Object.keys(unsetData).length > 0) updateOps.$unset = unsetData;
-//     const product = await populateProduct(
-//       Product.findByIdAndUpdate(req.params.id, updateOps, { new: true, runValidators: true })
-//     );
-//     if (!product) return res.status(404).json({ success: false, message: 'Product not found' });
-
-//     res.status(200).json({ success: true, message: 'Product updated', data: product });
-//   } catch (error) {
-//     console.error('updateProduct:', error);
-//     res.status(500).json({ success: false, message: error.message });
-//   }
-// };
-
 // ── UPDATE ────────────────────────────────────────────────────────────────────
 exports.updateProduct = async (req, res) => {
   try {
-    const { name, category, subCategory, model, description, price, features, specifications, isFeatured, isActive } = req.body;
+    const { name, category, subCategory, sku, model, description, price, features, specifications, isFeatured, isActive } = req.body;
 
     const updateData = {};
-    const unsetData = {}; // ✅ was missing — caused a ReferenceError on category/subCategory clearing
+    const unsetData = {};
 
     if (name !== undefined) updateData.name = name.trim();
     if (description !== undefined) updateData.description = description.trim();
     if (isFeatured !== undefined) updateData.isFeatured = isFeatured === 'true' || isFeatured === true;
     if (isActive !== undefined) updateData.isActive = isActive === 'true' || isActive === true;
     if (price !== undefined && price !== '') updateData.price = price || 0;
-    if (model !== undefined) updateData.model = model || '';
+
+    const cleanSku = sku !== undefined ? sku : model !== undefined ? model : undefined;
+    if (cleanSku !== undefined) updateData.sku = cleanSku || '';
 
     if (category !== undefined) {
       if (category) {
@@ -362,7 +219,7 @@ exports.updateProduct = async (req, res) => {
     if (parsedFeatures !== null) updateData.features = parsedFeatures;
 
     const updateOps = { $set: updateData };
-    if (Object.keys(unsetData).length > 0) updateOps.$unset = unsetData; // ✅ was declared but never applied
+    if (Object.keys(unsetData).length > 0) updateOps.$unset = unsetData;
 
     const product = await populateProduct(
       Product.findByIdAndUpdate(req.params.id, updateOps, { new: true, runValidators: true })
@@ -397,7 +254,7 @@ exports.searchProducts = async (req, res) => {
     if (q?.trim()) {
       filter.$or = [
         { name: { $regex: q.trim(), $options: 'i' } },
-        { model: { $regex: q.trim(), $options: 'i' } },
+        { sku: { $regex: q.trim(), $options: 'i' } },
       ];
     }
     if (parentCategoryId?.trim()) filter.parentCategoryId = parentCategoryId.trim();

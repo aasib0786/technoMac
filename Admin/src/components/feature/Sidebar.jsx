@@ -155,6 +155,7 @@ export default function Sidebar({ isOpen, onClose, isDarkMode }) {
     // ...(permissions?.catalogueUpload?.read ? [
     // { title: 'Catalogue Upload', icon: 'ri-file-pdf-line', path: '/admin/catalogue', },
     { title: 'FAQs',icon: 'ri-questionnaire-line', path: '/admin/application/faqs' },
+    { title: 'Blogs', icon: 'ri-article-line', path: '/admin/application/blogs' },
     { title: 'Subscription',icon: 'ri-mail-send-line', path: '/admin/application/subscription' },
     { title: 'Review', icon: 'ri-star-half-line',path: '/admin/application/review' },
     { title: 'Client',icon: 'ri-user-heart-line', path: '/admin/application/client' },

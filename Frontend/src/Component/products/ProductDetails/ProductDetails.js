@@ -172,6 +172,7 @@ export default function ProductDetails() {
             </div>
           </div>
         </div>
+        
         {filterRelatedProducts.length > 0 && <div className={styles.relatedSection}>
           <div className={styles.relatedHeading}>
             <span>

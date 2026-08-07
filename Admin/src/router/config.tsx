@@ -41,6 +41,7 @@ import TermAndCondition from "../pages/admin/termAndCondition/page.jsx";
 import BlankPage from "../pages/admin/blanckPage/page.jsx"
 import NewUpdate from "../pages/admin/newUpdate/page.jsx"
 import ParentCategory from "../pages/admin/application/parent-category/page.jsx"
+import BlogsManagement from "../pages/admin/application/blogs/page.jsx"
 
 const CatalogueUpload = lazy(() => import('../pages/admin/catalogue/page'));
 
@@ -100,6 +101,7 @@ const routes: RouteObject[] = [
           { path: 'review', element: <ReviewManagement /> },
           { path: 'client', element: <ClientManagement /> },
           { path: 'callback', element: <CallbackManagement /> },
+          { path: 'blogs', element: <BlogsManagement /> },
         ],
       },
       {

@@ -7,6 +7,11 @@ const ProductSchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
+    slug: {
+      type: String,
+      trim: true,
+      default: '',
+    },
     // ✅ Full category chain — optional
     parentCategoryId: {
       type: mongoose.Schema.Types.ObjectId,
@@ -30,6 +35,26 @@ const ProductSchema = new mongoose.Schema(
       default: '',
     },
     description: {
+      type: String,
+      trim: true,
+      default: '',
+    },
+    metaTitle: {
+      type: String,
+      trim: true,
+      default: '',
+    },
+    metaDescription: {
+      type: String,
+      trim: true,
+      default: '',
+    },
+    metaKeywords: {
+      type: String,
+      trim: true,
+      default: '',
+    },
+    canonicalUrl: {
       type: String,
       trim: true,
       default: '',

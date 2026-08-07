@@ -6,6 +6,7 @@ const {
   createProduct,
   getAllProducts,
   getProductById,
+  getProductBySlug,
   getProductsByCategory,
   getProductsBySubCategory,
   getProductsByParentCategory,
@@ -19,6 +20,7 @@ productRouter.post('/', adminAuth, upload.array('images', 10), createProduct);
 productRouter.get('/', getAllProducts);
 productRouter.get('/featured', getFeaturedProducts);
 productRouter.get('/search', searchProducts);
+productRouter.get('/slug/:slug', getProductBySlug);
 productRouter.get('/by-parent/:parentId', getProductsByParentCategory);
 productRouter.get('/by-category/:categoryId', getProductsByCategory);
 productRouter.get('/by-subcategory/:subCategoryId', getProductsBySubCategory);

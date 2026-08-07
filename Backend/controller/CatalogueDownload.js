@@ -1,5 +1,5 @@
 const CatalogueDownload = require('../models/CatalogueDownload');
-const Catalogue = require('../models/Catalogue');
+const Catalogue = require('../models/catalogue');
 
 exports.createDownload = async (req, res) => {
   try {

@@ -200,7 +200,7 @@
 /* SWIPER */
 
 .reviewSwiper {
-  padding-bottom: 20px;
+  padding: 20px;
 }
 
 .reviewSwiper .swiper-slide {
@@ -460,7 +460,7 @@
   }
 
   .sectionHeader {
-    margin-bottom: 40px;
+    margin-bottom: 0px;
   }
 
   .sectionHeader h2 {

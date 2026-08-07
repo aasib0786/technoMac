@@ -172,30 +172,15 @@
 /* BUTTON */
 
 .submitBtn {
-
   width: 100%;
-
   height: 60px;
-
   border: none;
-
   border-radius: 18px;
-
-  background:
-    linear-gradient(
-      135deg,
-      #e53935,
-      #ff6b6b
-    );
-
+  background:var(--gradient-theme-color);
   color: #fff;
-
   font-size: 16px;
-
   font-weight: 800;
-
   margin-top: 10px;
-
   transition: 0.3s ease;
 }
 

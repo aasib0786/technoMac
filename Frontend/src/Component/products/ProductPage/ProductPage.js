@@ -80,50 +80,32 @@ function CategoryStrip({ parentCategoryId }) {
 
   return (
     <section className={categoryStyles.productSection} style={{ padding: 15, marginBottom: 15 }}>
-      {/* <div className="row">
-        {categories.map((item) => (
-          <div className="col-lg-3 col-md-6 col-6 mb-4" key={item._id}>
-            <Link
-              href={{ pathname: '/products', query: { category: item._id } }}
-              className={styles.productCard}
-            >
-              <div className={categoryStyles.imageWrapper}>
-                <CardImage src={item.image} alt={item.name} />
-              </div>
-              <div className={categoryStyles.cardContent}>
-                <h3>{item.name}</h3>
-                <span>Explore Products</span>
-              </div>
-            </Link>
-          </div>
-        ))}
-      </div> */}
-      <div className="row">
-        {categories.map((item) => (
-          <div className="col-lg-2 col-md-4 col-4 mb-3" key={item._id}>
-            <Link href={{ pathname: '/products', query: { category: item._id } }}
-              className={styles.productCard}
-            >
-              <div className={styles.imageWrapper}>
-                <Image
-                  width={200}
-                  height={150}
-                  src={item.image}
-                  alt={item.name}
-                />
-              </div>
-              <div className={styles.cardContent}>
-                <h3>
-                  {item.name}
-                </h3>
-                <span>
-                  Explore Products
-                </span>
-              </div>
-            </Link>
-          </div>
-        ))}
-      </div>
+
+      {/* // ─── Category strip ───────────────────────────── */}
+<div className="row">
+  {categories.map((item) => (
+    <div className="col-lg-2 col-md-3 col-6 mb-3" key={item._id}> {/* Use col-lg-2 or col-md-3 for tighter grid alignment */}
+      <Link 
+        href={{ pathname: '/products', query: { category: item._id } }}
+        className={`${styles.productCard} ${styles.categoryCard}`}
+      >
+        <div className={styles.categoryImage}>
+          <Image
+            width={120}
+            height={90}
+            src={item.image || dummyImage}
+            alt={item.name}
+            style={{ objectFit: "contain" }}
+          />
+        </div>
+        <div className={styles.cardContent}>
+          <h3>{item.name}</h3>
+          <span>Explore</span>
+        </div>
+      </Link>
+    </div>
+  ))}
+</div>
     </section>
   );
 }
@@ -180,30 +162,16 @@ function SubCategoryStrip({ categoryId }) {
     <section className={categoryStyles.productSection} style={{ padding: 15, marginBottom: 15 }}>
       <div className="row">
         {categories.map((item) => (
-          <div className="col-lg-3 col-md-6 col-6 mb-4" key={item._id}>
+          <div className="col-lg-2 col-md-3 col-6 mb-3" key={item._id}>
             <Link
               href={{ pathname: '/products', query: { sub: item._id } }}
-              className={styles.productCard}
+              className={`${styles.productCard} ${styles.categoryCard}`}
             >
-              {/* <div className={categoryStyles.imageWrapper}>
-                {item.image ? (
-                  <Image
-                    width={400}
-                    height={300}
-                    src={item.image}
-                    alt={item.name}
-                    style={{ objectFit: 'cover', width: '100%', height: '100%' }}
-                  />
-                ) : (
-                  <div style={{ width: '100%', height: '100%', background: '#e5e7eb', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <i className="ri-image-line" style={{ fontSize: 32, color: '#9ca3af' }}></i>
-                  </div>
-                )}
-              </div> */}
-              <div className={categoryStyles.imageWrapper}>
-                <CardImage src={item.image} alt={item.name} />
+              <div className={styles.categoryImage}>
+                <Image src={item.image || dummyImage} alt={item.name} width={120}
+            height={90} style={{ objectFit: "contain" }} />
               </div>
-              <div className={categoryStyles.cardContent}>
+              <div className={styles.cardContent}>
                 <h3>{item.name}</h3>
                 <span>Explore Products</span>
               </div>

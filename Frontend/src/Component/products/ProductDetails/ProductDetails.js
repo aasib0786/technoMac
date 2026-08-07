@@ -17,6 +17,30 @@ export default function ProductDetails() {
   const [product, setProduct] = useState({})
   const [relatedProducts, setRelatedProducts] = useState([])
   const [activeImage, setActiveImage] = useState('');
+  const [zoomStyle, setZoomStyle] = useState({
+  transform: "scale(1)",
+  transformOrigin: "50% 50%",
+});
+
+const handleMouseMove = (e) => {
+  const rect = e.currentTarget.getBoundingClientRect();
+
+  const x = ((e.clientX - rect.left) / rect.width) * 100;
+  const y = ((e.clientY - rect.top) / rect.height) * 100;
+
+  setZoomStyle({
+    transform: "scale(2)",
+    transformOrigin: `${x}% ${y}%`,
+  });
+};
+
+const handleMouseLeave = () => {
+  setZoomStyle({
+    transform: "scale(1)",
+    transformOrigin: "50% 50%",
+  });
+};
+  
 
   const fetchProductById = async () => {
     try {
@@ -67,15 +91,17 @@ export default function ProductDetails() {
         <Breadcrumb pageName={product?.name} />
 
         <div className="row">
-          <div className="col-lg-5">
+          <div className="col-lg-6">
             <div className={styles.imageWrapper}>
-              <div className={styles.mainImage}>
+              <div className={styles.mainImage}  onMouseMove={handleMouseMove}
+  onMouseLeave={handleMouseLeave}>
                 <Image
                   src={activeImage}
                   alt={product?.name}
-                  width={600}
-                  height={500}
+                  width={1000}
+                  height={800}
                   className={styles.mainProductImage}
+                      style={zoomStyle}
                 />
               </div>
               <div className={styles.galleryWrapper}>
@@ -107,7 +133,7 @@ export default function ProductDetails() {
             </div>
 
           </div>
-          <div className="col-lg-7">
+          <div className="col-lg-6">
             <div className={styles.content}>
               <span className="hero-tag">
                 {product?.category?.name}

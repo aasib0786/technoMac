@@ -4,19 +4,20 @@ const express = require('express');
 const app = express();
 const mongoose = require('mongoose');
 const cors = require('cors');
-const adminRoute = require('./routes/admin');
-const bannerRoute = require('./routes/banner');
+const adminRoute = require('./routes/Admin');
+const bannerRoute = require('./routes/Banner');
 const ContactRoute = require('./routes/Contact');
-const faqRoute = require('./routes/faq');
+const contactInfoRoute = require('./routes/ContactInfo');
+const faqRoute = require('./routes/Faq');
 const { categoryRouter } = require('./routes/category');
 const { parentCategoryRouter } = require('./routes/ParentCategory')
 const { subCategoryRouter } = require('./routes/subCategory');
 const { productRouter } = require('./routes/Product');
 const warrantyRoute = require('./routes/Warrenty');
-const certificateRoute = require('./routes/certificate');
+const certificateRoute = require('./routes/Certificate');
 const catalogueRoute = require('./routes/Catalogue');
 const catelogurDownloadRoute = require('./routes/CatalogueDownload');
-const newUpdateRoutes = require('./routes/newUpdate');
+const newUpdateRoutes = require('./routes/NewUpdate');
 const subscriberRoute = require('./routes/Subscriber');
 const testimonialRoute = require('./routes/Testimonial');
 const clientRoute = require('./routes/Client');
@@ -100,6 +101,7 @@ mongoose
   .catch((err) => {
     console.log(err);
   });
+
 app.use('/uploads', express.static('uploads'));
 app.use(cors());
 app.use(express.json());
@@ -108,6 +110,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/api/admin', adminRoute);
 app.use('/api/banner', bannerRoute);
 app.use('/api/contact', ContactRoute);
+app.use('/api/contact-info', contactInfoRoute);
 app.use('/api/category', categoryRouter);
 app.use('/api/parentCategory', parentCategoryRouter)
 app.use('/api/sub-category', subCategoryRouter);

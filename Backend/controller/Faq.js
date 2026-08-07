@@ -1,4 +1,4 @@
-const { FAQ } = require('../models/FAQ');
+const { FAQ } = require('../models/Faq');
 
 // ── CREATE  →  POST /api/faq ────────────────────────────────────
 exports.createFAQ = async (req, res) => {

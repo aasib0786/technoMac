@@ -152,6 +152,12 @@
 
 @media(max-width: 576px) {
 
+  .statCard::before {
+  width: 90px;
+  height: 90px;
+}
+
+
   .statsGrid {
   gap: 10px;
 }

@@ -425,7 +425,7 @@ export default function EnquiryPopup() {
         </button>
 
         {/* HEADER */}
-        <span className={styles.tag}>TECHNOMAC</span>
+        <span className="hero-tag">TECHNOMAC</span>
         <h2>Quick Enquiry</h2>
         <p>Get free consultation for dental clinic setup and equipment solutions.</p>
 

@@ -4,6 +4,15 @@ const { SubCategory } = require('../models/Subcategory ');
 const { Category } = require('../models/Category');
 const mongoose = require('mongoose');
 
+// ── Helper: Slug generator ───────────────────────────────────────────────────
+const generateSlug = (name) =>
+  name
+    .toLowerCase()
+    .trim()
+    .replace(/[^\w\s-]/g, '')
+    .replace(/[\s_-]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+
 // ── Helper: upload single buffer ─────────────────────────────────────────────
 const uploadToCloudinary = (buffer, folder) =>
   new Promise((resolve, reject) => {
@@ -39,20 +48,34 @@ const populateProduct = (query) =>
 // ── CREATE ───────────────────────────────────────────────────────────────────
 exports.createProduct = async (req, res) => {
   try {
-    const { name, category, subCategory, sku, model, description, price, features, specifications, isFeatured } = req.body;
+    const {
+      name,
+      slug,
+      category,
+      subCategory,
+      sku,
+      model,
+      description,
+      price,
+      metaTitle,
+      metaDescription,
+      metaKeywords,
+      canonicalUrl,
+      features,
+      specifications,
+      isFeatured,
+    } = req.body;
 
     if (!name?.trim()) return res.status(400).json({ success: false, message: 'Name is required' });
 
-    // ✅ Duplicate Name check — only runs if a Name was actually provided
-    const cleanName = name?.trim() || undefined;
-    if (cleanName) {
-      const existing = await Product.findOne({ name: cleanName });
-      if (existing) {
-        return res.status(400).json({ success: false, message: 'Product with this Name already exists' });
-      }
+    const cleanName = name?.trim();
+    const existing = await Product.findOne({ name: cleanName });
+    if (existing) {
+      return res.status(400).json({ success: false, message: 'Product with this Name already exists' });
     }
 
-    // ✅ Auto-fetch parentCategoryId from category, only if category is given
+    const finalSlug = slug?.trim() ? generateSlug(slug) : generateSlug(name);
+
     let parentCategoryId = null;
     if (category) {
       const categoryDoc = await Category.findById(category);
@@ -65,7 +88,8 @@ exports.createProduct = async (req, res) => {
       : [];
 
     const product = await Product.create({
-      name: name.trim(),
+      name: cleanName,
+      slug: finalSlug,
       parentCategoryId: parentCategoryId || undefined,
       category: category || undefined,
       subCategory: subCategory || undefined,
@@ -73,6 +97,10 @@ exports.createProduct = async (req, res) => {
       description: description?.trim() || '',
       price: price || 0,
       images,
+      metaTitle: metaTitle?.trim() || cleanName,
+      metaDescription: metaDescription?.trim() || description?.trim() || '',
+      metaKeywords: metaKeywords?.trim() || '',
+      canonicalUrl: canonicalUrl?.trim() || '',
       specifications: parseJSON(specifications),
       features: parseJSON(features),
       isFeatured: isFeatured === 'true' || isFeatured === true,
@@ -128,7 +156,6 @@ exports.getProductsByParentCategory = async (req, res) => {
   try {
     const { parentId } = req.params;
 
-    // ✅ Validate ObjectId before query
     if (!mongoose.Types.ObjectId.isValid(parentId)) {
       return res.status(400).json({ success: false, message: 'Invalid parentId' });
     }
@@ -149,10 +176,21 @@ exports.getProductsByParentCategory = async (req, res) => {
   }
 };
 
-// ── GET SINGLE ────────────────────────────────────────────────────────────────
+// ── GET SINGLE BY ID ──────────────────────────────────────────────────────────
 exports.getProductById = async (req, res) => {
   try {
     const product = await populateProduct(Product.findById(req.params.id));
+    if (!product) return res.status(404).json({ success: false, message: 'Product not found' });
+    res.status(200).json({ success: true, data: product });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// ── GET SINGLE BY SLUG ────────────────────────────────────────────────────────
+exports.getProductBySlug = async (req, res) => {
+  try {
+    const product = await populateProduct(Product.findOne({ slug: req.params.slug }));
     if (!product) return res.status(404).json({ success: false, message: 'Product not found' });
     res.status(200).json({ success: true, data: product });
   } catch (error) {
@@ -175,13 +213,39 @@ exports.getFeaturedProducts = async (req, res) => {
 // ── UPDATE ────────────────────────────────────────────────────────────────────
 exports.updateProduct = async (req, res) => {
   try {
-    const { name, category, subCategory, sku, model, description, price, features, specifications, isFeatured, isActive } = req.body;
+    const {
+      name,
+      slug,
+      category,
+      subCategory,
+      sku,
+      model,
+      description,
+      price,
+      metaTitle,
+      metaDescription,
+      metaKeywords,
+      canonicalUrl,
+      features,
+      specifications,
+      isFeatured,
+      isActive,
+    } = req.body;
 
     const updateData = {};
     const unsetData = {};
 
-    if (name !== undefined) updateData.name = name.trim();
+    if (name !== undefined) {
+      updateData.name = name.trim();
+      if (!slug?.trim()) updateData.slug = generateSlug(name);
+    }
+    if (slug?.trim()) updateData.slug = generateSlug(slug);
     if (description !== undefined) updateData.description = description.trim();
+    if (metaTitle !== undefined) updateData.metaTitle = metaTitle.trim();
+    if (metaDescription !== undefined) updateData.metaDescription = metaDescription.trim();
+    if (metaKeywords !== undefined) updateData.metaKeywords = metaKeywords.trim();
+    if (canonicalUrl !== undefined) updateData.canonicalUrl = canonicalUrl.trim();
+
     if (isFeatured !== undefined) updateData.isFeatured = isFeatured === 'true' || isFeatured === true;
     if (isActive !== undefined) updateData.isActive = isActive === 'true' || isActive === true;
     if (price !== undefined && price !== '') updateData.price = price || 0;

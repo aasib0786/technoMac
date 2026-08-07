@@ -10,7 +10,7 @@ import 'react-toastify/dist/ReactToastify.css';
 
 const emptyForm = {
   name: '',
-  model: '',
+  sku: '',
   description: '',
   parentCategoryId: '',  // ✅ NEW
   category: '',
@@ -175,7 +175,7 @@ export default function ProductsManagement() {
   const buildFD = () => {
     const fd = new FormData();
     fd.append('name', formData.name);
-    fd.append('model', formData.model);
+    fd.append('sku', formData.sku);
     fd.append('description', formData.description);
     fd.append('category', formData.category);
     fd.append('subCategory', formData.subCategory);
@@ -234,7 +234,7 @@ export default function ProductsManagement() {
     const parentId = product.parentCategoryId?._id || product.parentCategoryId || '';
     setFormData({
       name: product.name || '',
-      model: product.model || '',
+      sku: product.sku || '',
       description: product.description || '',
       parentCategoryId: parentId,
       category: catId,
@@ -429,7 +429,7 @@ export default function ProductsManagement() {
                     ].filter(Boolean).join(' › ')}
                   </p>
                   <h3 className="font-semibold text-gray-900 mb-0.5">{product.name}</h3>
-                  <p className="text-xs text-gray-500 mb-1">Model: {product.model}</p>
+                  <p className="text-xs text-gray-500 mb-1">Model: {product?.sku}</p>
                   <p className="text-sm text-gray-600 mt-1 mb-2 line-clamp-2">{product.description}</p>
                   <p className="text-sm font-semibold text-green-600 mb-3">₹{product.price}</p>
 
@@ -484,8 +484,8 @@ export default function ProductsManagement() {
                   {/* Model */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">Model </label>
-                    <input type="text" value={formData.model}
-                      onChange={(e) => setFormData({ ...formData, model: e.target.value })}
+                    <input type="text" value={formData.sku}
+                      onChange={(e) => setFormData({ ...formData, sku: e.target.value })}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 text-sm" />
                   </div>
 

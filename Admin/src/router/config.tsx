@@ -41,6 +41,8 @@ import TermAndCondition from "../pages/admin/termAndCondition/page.jsx";
 import BlankPage from "../pages/admin/blanckPage/page.jsx"
 import NewUpdate from "../pages/admin/newUpdate/page.jsx"
 import ParentCategory from "../pages/admin/application/parent-category/page.jsx"
+import BlogsManagement from "../pages/admin/application/blogs/page.jsx"
+import ContactInfoManagement from "../pages/admin/application/contact/page.jsx"
 
 const CatalogueUpload = lazy(() => import('../pages/admin/catalogue/page'));
 
@@ -73,8 +75,7 @@ const routes: RouteObject[] = [
       {
         path: 'application',
         children: [
-          
-           { path: 'parentCategory', element: <ParentCategory /> },
+          { path: 'parentCategory', element: <ParentCategory /> },
           { path: 'categories', element: <CategoriesManagement /> },
           { path: 'subcategories', element: <SubCategoriesManagement /> },
           { path: 'products', element: <ProductsManagement /> },
@@ -92,14 +93,14 @@ const routes: RouteObject[] = [
             path: 'CatalogueDownloadsManagement',
             element: <CatalogueDownloadsManagement />,
           },
-
-          // { path: "notifications", element: <NotificationsManagement /> },
           { path: 'rewards', element: <RewardsManagement /> },
           { path: 'faqs', element: <FaqsManagement /> },
           { path: 'subscription', element: <SubscribersManagement /> },
           { path: 'review', element: <ReviewManagement /> },
           { path: 'client', element: <ClientManagement /> },
           { path: 'callback', element: <CallbackManagement /> },
+          { path: 'blogs', element: <BlogsManagement /> },
+          { path: 'contact', element: <ContactInfoManagement /> },
         ],
       },
       {

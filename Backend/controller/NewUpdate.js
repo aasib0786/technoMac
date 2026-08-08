@@ -1,6 +1,15 @@
 const NewUpdate = require('../models/NewUpdate');
 const cloudinary = require('../config/cloudinary');
 
+// ── Helper: Slug generator ───────────────────────────────────────
+const generateSlug = (name) =>
+    name
+        .toLowerCase()
+        .trim()
+        .replace(/[^\w\s-]/g, '')
+        .replace(/[\s_-]+/g, '-')
+        .replace(/^-+|-+$/g, '');
+
 // ── Helper: upload buffer to Cloudinary ──────────────────────────
 const uploadToCloudinary = (buffer, options) =>
     new Promise((resolve, reject) => {
@@ -13,11 +22,23 @@ const uploadToCloudinary = (buffer, options) =>
     });
 
 // ── CREATE ───────────────────────────────────────────────────────
-// POST /api/newupdate/create
-// multipart: title (required), description (required), image (required), points (optional JSON array or comma-separated string)
 exports.createNewUpdate = async (req, res) => {
     try {
-        const { title, description, points, subTitle } = req.body;
+        const {
+            title,
+            subTitle,
+            description,
+            points,
+            slug,
+            metaTitle,
+            metaDescription,
+            metaKeywords,
+            canonicalUrl,
+        } = req.body;
+
+        if (!title?.trim()) {
+            return res.status(400).json({ success: false, message: 'Title is required' });
+        }
 
         // Cover image is required
         if (!req.files?.image?.[0]) {
@@ -27,13 +48,11 @@ exports.createNewUpdate = async (req, res) => {
             });
         }
 
-        // Parse points — accept JSON array string OR comma-separated string
         let parsedPoints = [];
         if (points) {
             try {
-                parsedPoints = JSON.parse(points); // e.g. '["HD quality","Fast processing"]'
+                parsedPoints = JSON.parse(points);
             } catch {
-                // Fallback: split by comma
                 parsedPoints = points
                     .split(',')
                     .map((p) => p.trim())
@@ -41,17 +60,23 @@ exports.createNewUpdate = async (req, res) => {
             }
         }
 
-        // Upload cover image to Cloudinary
         const imageResult = await uploadToCloudinary(req.files.image[0].buffer, {
             folder: 'newupdates/images',
         });
 
+        const finalSlug = slug?.trim() ? generateSlug(slug) : generateSlug(title);
+
         const newUpdate = await NewUpdate.create({
-            title,
-            subTitle,
-            description,
+            title: title.trim(),
+            subTitle: subTitle?.trim() || '',
+            description: description?.trim() || '',
             image: imageResult.secure_url,
             points: parsedPoints,
+            slug: finalSlug,
+            metaTitle: metaTitle?.trim() || title.trim(),
+            metaDescription: metaDescription?.trim() || description?.trim() || '',
+            metaKeywords: metaKeywords?.trim() || '',
+            canonicalUrl: canonicalUrl?.trim() || '',
         });
 
         res.status(201).json({
@@ -66,7 +91,6 @@ exports.createNewUpdate = async (req, res) => {
 };
 
 // ── GET ALL ──────────────────────────────────────────────────────
-// GET /api/newupdate/all
 exports.getAllNewUpdates = async (req, res) => {
     try {
         const newUpdates = await NewUpdate.find().sort({ createdAt: -1 });
@@ -81,8 +105,7 @@ exports.getAllNewUpdates = async (req, res) => {
     }
 };
 
-// ── GET SINGLE ───────────────────────────────────────────────────
-// GET /api/newupdate/:id
+// ── GET SINGLE BY ID ─────────────────────────────────────────────
 exports.getNewUpdateById = async (req, res) => {
     try {
         const newUpdate = await NewUpdate.findById(req.params.id);
@@ -100,10 +123,25 @@ exports.getNewUpdateById = async (req, res) => {
     }
 };
 
+// ── GET SINGLE BY SLUG ───────────────────────────────────────────
+exports.getNewUpdateBySlug = async (req, res) => {
+    try {
+        const newUpdate = await NewUpdate.findOne({ slug: req.params.slug });
+
+        if (!newUpdate) {
+            return res.status(404).json({
+                success: false,
+                message: 'NewUpdate not found',
+            });
+        }
+
+        res.status(200).json({ success: true, data: newUpdate });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+
 // ── GET BY SUBTITLE ──────────────────────────────────────────────
-// GET /api/newupdate/subtitle/:subTitle
-// Supports case-insensitive exact match
-// e.g. /api/newupdate/subtitle/Smart%20Healthcare%20Equipment
 exports.getBySubTitle = async (req, res) => {
     try {
         const { subTitle } = req.params;
@@ -130,8 +168,6 @@ exports.getBySubTitle = async (req, res) => {
 };
 
 // ── UPDATE ───────────────────────────────────────────────────────
-// PUT /api/newupdate/:id
-// multipart: title?, description?, image? (optional), points? (optional)
 exports.updateNewUpdate = async (req, res) => {
     try {
         const newUpdate = await NewUpdate.findById(req.params.id);
@@ -144,13 +180,21 @@ exports.updateNewUpdate = async (req, res) => {
         }
 
         const updateData = {
-            title: req.body.title || newUpdate.title,
-            subTitle: req.body.subTitle || newUpdate.subTitle,
-            description: req.body.description || newUpdate.description,
-            points: newUpdate.points, // keep existing by default
+            title: req.body.title !== undefined ? req.body.title.trim() : newUpdate.title,
+            subTitle: req.body.subTitle !== undefined ? req.body.subTitle.trim() : newUpdate.subTitle,
+            description: req.body.description !== undefined ? req.body.description.trim() : newUpdate.description,
+            metaTitle: req.body.metaTitle !== undefined ? req.body.metaTitle.trim() : newUpdate.metaTitle,
+            metaDescription: req.body.metaDescription !== undefined ? req.body.metaDescription.trim() : newUpdate.metaDescription,
+            metaKeywords: req.body.metaKeywords !== undefined ? req.body.metaKeywords.trim() : newUpdate.metaKeywords,
+            canonicalUrl: req.body.canonicalUrl !== undefined ? req.body.canonicalUrl.trim() : newUpdate.canonicalUrl,
+            slug: req.body.slug !== undefined && req.body.slug.trim()
+                ? generateSlug(req.body.slug)
+                : req.body.title
+                ? generateSlug(req.body.title)
+                : newUpdate.slug,
+            points: newUpdate.points,
         };
 
-        // Update points if provided
         if (req.body.points !== undefined) {
             try {
                 updateData.points = JSON.parse(req.body.points);
@@ -162,7 +206,6 @@ exports.updateNewUpdate = async (req, res) => {
             }
         }
 
-        // New image uploaded → replace
         if (req.files?.image?.[0]) {
             const imageResult = await uploadToCloudinary(req.files.image[0].buffer, {
                 folder: 'newupdates/images',
@@ -188,7 +231,6 @@ exports.updateNewUpdate = async (req, res) => {
 };
 
 // ── DELETE ───────────────────────────────────────────────────────
-// DELETE /api/newupdate/:id
 exports.deleteNewUpdate = async (req, res) => {
     try {
         const newUpdate = await NewUpdate.findById(req.params.id);

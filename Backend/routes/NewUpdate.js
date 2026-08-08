@@ -19,10 +19,13 @@ router.post('/create', uploadFields, newUpdateController.createNewUpdate);
 // GET    /api/newupdate/all      → getAllNewUpdates
 router.get('/all', newUpdateController.getAllNewUpdates);
 
+// GET    /api/newupdate/slug/:slug → getNewUpdateBySlug
+router.get('/slug/:slug', newUpdateController.getNewUpdateBySlug);
+
 // GET    /api/newupdate/:id      → getNewUpdateById
 router.get('/:id', newUpdateController.getNewUpdateById);
 
-// GET    /api/newupdate/subtitle/:subTitle → getBySubTitle  ← NEW
+// GET    /api/newupdate/subtitle/:subTitle → getBySubTitle
 router.get('/subtitle/:subTitle', newUpdateController.getBySubTitle);
 
 // PUT    /api/newupdate/:id      → updateNewUpdate

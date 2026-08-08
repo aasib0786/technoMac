@@ -25,6 +25,31 @@ const NewUpdateSchema = new mongoose.Schema(
       type: [String], // Array of bullet points e.g. ["Premium comfort", "LED light"]
       default: [],
     },
+    slug: {
+      type: String,
+      trim: true,
+      default: '',
+    },
+    metaTitle: {
+      type: String,
+      trim: true,
+      default: '',
+    },
+    metaDescription: {
+      type: String,
+      trim: true,
+      default: '',
+    },
+    metaKeywords: {
+      type: String,
+      trim: true,
+      default: '',
+    },
+    canonicalUrl: {
+      type: String,
+      trim: true,
+      default: '',
+    },
   },
   { timestamps: true },
 );

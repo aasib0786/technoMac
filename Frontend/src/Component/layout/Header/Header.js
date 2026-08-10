@@ -562,7 +562,7 @@ export default function Header() {
                 <Link href="/warranty-registration">
                   <button className={styles.warrantyBtn}>Extend Warranty</button>
                 </Link>
-                <a href="https://razorpay.com/">
+                <a href="https://razorpay.me/@technomacmedicalsystemspvtltd">
                   <button className={styles.quoteBtn}>Pay Now</button>
                 </a>
 

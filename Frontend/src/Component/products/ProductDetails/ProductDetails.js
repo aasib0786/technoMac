@@ -356,7 +356,7 @@ export default function ProductDetails() {
                         ) : null}
                         <span>{item?.category?.name}</span>
                         <h3>{item.name}</h3>
-                        <p>{item?.description}</p>
+                        {/* <p>{item?.description}</p> */}
                         <Link href={`/product/${item?.slug || toSlug(item?.name) || item._id}`}>
                           <button>View Details</button>
                         </Link>

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import styles from "./WhatsAppChat.module.css";
+import { getData } from "../../services/FetchNodeServices";
 
 const PLACEHOLDER_TEXT = "Type your message here...";
 const PHONE_NUMBER = "919311125574";
@@ -29,6 +30,39 @@ const WhatsAppChat = () => {
   const [charIndex, setCharIndex] = useState(0);
   const [message, setMessage] = useState("");
 
+    const [contactInfo, setContactInfo] = useState({
+    salesPhone: "+91-8448825572, +91-9268825571, +91-9599090411",
+    servicePhone: "+91 9311125574",
+    email: "info@technomac.com",
+    address:
+      "Plot no.-88, Pocket- L, Sector 1, Bawana Industrial Area, DSIIDC Sub-city, New Delhi-110039, India",
+    whatsappPhone: "+919311125574",
+  });
+
+  useEffect(() => {
+    const fetchContactInfo = async () => {
+      try {
+        const res = await getData("contact-info");
+        if (res?.success && res?.data) {
+          setContactInfo({
+            salesPhone:
+              res.data.salesPhone ||
+              "+91-8448825572, +91-9268825571, +91-9599090411",
+            servicePhone: res.data.servicePhone || "+91 9311125574",
+            email: res.data.email || "info@technomac.com",
+            address:
+              res.data.address ||
+              "Plot no.-88, Pocket- L, Sector 1, Bawana Industrial Area, DSIIDC Sub-city, New Delhi-110039, India",
+            whatsappPhone: res.data.whatsappPhone || "+919311125574",
+          });
+        }
+      } catch (err) {
+        console.error("fetchContactInfo error:", err);
+      }
+    };
+    fetchContactInfo();
+  }, []);
+
   /* ── Typing Effect ── */
   useEffect(() => {
     if (!open) {
@@ -51,7 +85,7 @@ const WhatsAppChat = () => {
   /* ── Send to WhatsApp ── */
   const sendToWhatsApp = () => {
     if (!message.trim()) return;
-    const url = `https://wa.me/${PHONE_NUMBER}?text=${encodeURIComponent(message.trim())}`;
+    const url = `https://wa.me/${contactInfo.whatsappPhone}?text=${encodeURIComponent(message.trim())}`;
     window.open(url, "_blank");
     setMessage("");
     setOpen(false);

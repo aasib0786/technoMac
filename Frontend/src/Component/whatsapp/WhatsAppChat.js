@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import styles from "./WhatsAppChat.module.css";
+import { getData } from "../../services/FetchNodeServices";
 
 const PLACEHOLDER_TEXT = "Type your message here...";
 const PHONE_NUMBER = "919311125574";

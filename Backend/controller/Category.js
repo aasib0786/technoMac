@@ -1,5 +1,7 @@
 const { Category } = require('../models/Category');
+const { ParentCategory } = require('../models/ParentCategory');
 const cloudinary = require('../config/cloudinary');
+const mongoose = require('mongoose');
 
 // ── Helper: upload buffer to Cloudinary ──────────────────────────────────────
 const uploadToCloudinary = (buffer, folder) =>
@@ -104,8 +106,35 @@ exports.getCategoryById = async (req, res) => {
 // ── GET BY PARENT CATEGORY ───────────────────────────────────────────────────
 exports.getCategoriesByParent = async (req, res) => {
   try {
+    const { parentId } = req.params;
+
+    if (!parentId) {
+      return res.status(400).json({ success: false, message: 'Parent identifier is required' });
+    }
+
+    let parentIdToUse = parentId;
+    if (!mongoose.Types.ObjectId.isValid(parentId)) {
+      const decodedParam = decodeURIComponent(parentId).trim();
+      const normalizedParam = decodedParam.replace(/[-_]+/g, ' ').trim();
+      const slugPattern = new RegExp(`^${decodedParam.replace(/[-_]/g, '[-_\\s]')}$`, 'i');
+      const namePattern = new RegExp(`^${normalizedParam}$`, 'i');
+
+      const parentDoc = await ParentCategory.findOne({
+        $or: [
+          { name: { $regex: namePattern } },
+          { name: { $regex: slugPattern } },
+          { name: decodedParam },
+        ],
+      });
+
+      if (!parentDoc) {
+        return res.status(200).json({ success: true, data: [] });
+      }
+      parentIdToUse = parentDoc._id;
+    }
+
     const categories = await Category.find({
-      parentCategoryId: req.params.parentId,
+      parentCategoryId: parentIdToUse,
       isActive: true,
     }).sort({ createdAt: -1 });
 

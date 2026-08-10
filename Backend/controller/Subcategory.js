@@ -1,6 +1,8 @@
 const { SubCategory } = require('../models/Subcategory ');
 const { Category } = require('../models/Category');
+const { ParentCategory } = require('../models/ParentCategory');
 const cloudinary = require('../config/cloudinary');
+const mongoose = require('mongoose');
 
 // ── Helper: upload buffer to Cloudinary ──────────────────────────────────────
 const uploadToCloudinary = (buffer, folder) =>
@@ -93,8 +95,33 @@ exports.getAllActiveSubCategories = async (req, res) => {
 // ── GET BY CATEGORY ID ────────────────────────────────────────────────────────
 exports.getSubCategoriesByCategory = async (req, res) => {
   try {
-    const subCategories = await SubCategory.find({ category: req.params.categoryId, isActive: true }).populate("category")
+    const { categoryId } = req.params;
+    if (!categoryId) {
+      return res.status(400).json({ success: false, message: 'Category identifier is required' });
+    }
 
+    let categoryIdToUse = categoryId;
+    if (!mongoose.Types.ObjectId.isValid(categoryId)) {
+      const decodedParam = decodeURIComponent(categoryId).trim();
+      const normalizedParam = decodedParam.replace(/[-_]+/g, ' ').trim();
+      const slugPattern = new RegExp(`^${decodedParam.replace(/[-_]/g, '[-_\\s]')}$`, 'i');
+      const namePattern = new RegExp(`^${normalizedParam}$`, 'i');
+
+      const categoryDoc = await Category.findOne({
+        $or: [
+          { name: { $regex: namePattern } },
+          { name: { $regex: slugPattern } },
+          { name: decodedParam },
+        ],
+      });
+
+      if (!categoryDoc) {
+        return res.status(200).json({ success: true, data: [] });
+      }
+      categoryIdToUse = categoryDoc._id;
+    }
+
+    const subCategories = await SubCategory.find({ category: categoryIdToUse, isActive: true }).populate('category');
     res.status(200).json({ success: true, data: subCategories });
   } catch (error) {
     console.error('getSubCategoriesByCategory:', error);
@@ -105,8 +132,34 @@ exports.getSubCategoriesByCategory = async (req, res) => {
 // ── GET BY PARENT CATEGORY ID ─────────────────────────────────────────────────
 exports.getSubCategoriesByParent = async (req, res) => {
   try {
+    const { parentId } = req.params;
+    if (!parentId) {
+      return res.status(400).json({ success: false, message: 'Parent identifier is required' });
+    }
+
+    let parentIdToUse = parentId;
+    if (!mongoose.Types.ObjectId.isValid(parentId)) {
+      const decodedParam = decodeURIComponent(parentId).trim();
+      const normalizedParam = decodedParam.replace(/[-_]+/g, ' ').trim();
+      const slugPattern = new RegExp(`^${decodedParam.replace(/[-_]/g, '[-_\\s]')}$`, 'i');
+      const namePattern = new RegExp(`^${normalizedParam}$`, 'i');
+
+      const parentDoc = await ParentCategory.findOne({
+        $or: [
+          { name: { $regex: namePattern } },
+          { name: { $regex: slugPattern } },
+          { name: decodedParam },
+        ],
+      });
+
+      if (!parentDoc) {
+        return res.status(200).json({ success: true, data: [] });
+      }
+      parentIdToUse = parentDoc._id;
+    }
+
     const subCategories = await populateSubCategory(
-      SubCategory.find({ parentCategoryId: req.params.parentId, isActive: true })
+      SubCategory.find({ parentCategoryId: parentIdToUse, isActive: true })
     );
     res.status(200).json({ success: true, data: subCategories });
   } catch (error) {

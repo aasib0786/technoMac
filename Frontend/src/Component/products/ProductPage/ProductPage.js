@@ -9,8 +9,18 @@ import { getData } from "../../../services/FetchNodeServices";
 import categoryStyles from "../../Home/HomeProducts/HomeProducts.module.css";
 import Link from "next/link";
 import Image from "next/image";
-import dummyImage from "../../../../Images/landing_doctors.png"
+import dummyImage from "../../../../Images/landing_doctors.png";
 
+// Helper to convert names to URL-safe slugs without %20
+const toSlug = (text) => {
+  if (!text) return "";
+  return text
+    .toLowerCase()
+    .trim()
+    .replace(/[^\w\s-]/g, "")
+    .replace(/[\s_-]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+};
 
 function CardImage({ src, alt }) {
   const [imgSrc, setImgSrc] = useState(src || dummyImage);
@@ -42,8 +52,7 @@ function CategoryStrip({ parentCategoryId }) {
     const fetchCategories = async () => {
       setLoading(true);
       try {
-        // ✅ FIX: correct route — by-parent not category/by-parent
-        const res = await getData(`category/by-parent/${parentCategoryId}`);
+        const res = await getData(`category/by-parent/${encodeURIComponent(parentCategoryId)}`);
         if (res?.success) {
           setCategories(
             res.data.map((item) => ({
@@ -62,7 +71,7 @@ function CategoryStrip({ parentCategoryId }) {
     };
 
     fetchCategories();
-  }, [parentCategoryId]); // ✅ FIX: re-fetch when parentCategoryId changes
+  }, [parentCategoryId]);
 
   if (!parentCategoryId || categories.length === 0) return null;
 
@@ -80,37 +89,35 @@ function CategoryStrip({ parentCategoryId }) {
 
   return (
     <section className={categoryStyles.productSection} style={{ padding: 15, marginBottom: 15 }}>
-
-      {/* // ─── Category strip ───────────────────────────── */}
-<div className="row">
-  {categories.map((item) => (
-    <div className="col-lg-2 col-md-3 col-6 mb-3" key={item._id}> {/* Use col-lg-2 or col-md-3 for tighter grid alignment */}
-      <Link 
-        href={{ pathname: '/products', query: { category: item._id } }}
-        className={`${styles.productCard} ${styles.categoryCard}`}
-      >
-        <div className={styles.categoryImage}>
-          <Image
-            width={120}
-            height={90}
-            src={item.image || dummyImage}
-            alt={item.name}
-            style={{ objectFit: "contain" }}
-          />
-        </div>
-        <div className={styles.cardContent}>
-          <h3>{item.name}</h3>
-          <span>Explore</span>
-        </div>
-      </Link>
-    </div>
-  ))}
-</div>
+      <div className="row">
+        {categories.map((item) => (
+          <div className="col-lg-2 col-md-3 col-6 mb-3" key={item._id}>
+            <Link 
+              href={{ pathname: '/products', query: { category: toSlug(item.name) || item._id } }}
+              className={`${styles.productCard} ${styles.categoryCard}`}
+            >
+              <div className={styles.categoryImage}>
+                <Image
+                  width={120}
+                  height={90}
+                  src={item.image || dummyImage}
+                  alt={item.name}
+                  style={{ objectFit: "contain" }}
+                />
+              </div>
+              <div className={styles.cardContent}>
+                <h3>{item.name}</h3>
+                <span>Explore</span>
+              </div>
+            </Link>
+          </div>
+        ))}
+      </div>
     </section>
   );
 }
 
-// ─── Category strip (filtered by parentCategory) ─────────────────────────────
+// ─── SubCategory strip (filtered by category) ────────────────────────────────
 function SubCategoryStrip({ categoryId }) {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -121,9 +128,7 @@ function SubCategoryStrip({ categoryId }) {
     const fetchCategories = async () => {
       setLoading(true);
       try {
-        // ✅ FIX: correct route — by-parent not category/by-parent
-        const res = await getData(`sub-category/by-category/${categoryId}`);
-        console.log("subCategoryStrip===>", res)
+        const res = await getData(`sub-category/by-category/${encodeURIComponent(categoryId)}`);
         if (res?.success) {
           setCategories(
             res.data.map((item) => ({
@@ -135,14 +140,14 @@ function SubCategoryStrip({ categoryId }) {
           );
         }
       } catch (e) {
-        console.error('CategoryStrip fetch failed:', e?.message);
+        console.error('SubCategoryStrip fetch failed:', e?.message);
       } finally {
         setLoading(false);
       }
     };
 
     fetchCategories();
-  }, [categoryId]); // ✅ FIX: re-fetch when parentCategoryId changes
+  }, [categoryId]);
 
   if (!categoryId || categories.length === 0) return null;
 
@@ -164,12 +169,17 @@ function SubCategoryStrip({ categoryId }) {
         {categories.map((item) => (
           <div className="col-lg-2 col-md-3 col-6 mb-3" key={item._id}>
             <Link
-              href={{ pathname: '/products', query: { sub: item._id } }}
+              href={{ pathname: '/products', query: { sub: toSlug(item.name) || item.name } }}
               className={`${styles.productCard} ${styles.categoryCard}`}
             >
               <div className={styles.categoryImage}>
-                <Image src={item.image || dummyImage} alt={item.name} width={120}
-            height={90} style={{ objectFit: "contain" }} />
+                <Image
+                  src={item.image || dummyImage}
+                  alt={item.name}
+                  width={120}
+                  height={90}
+                  style={{ objectFit: "contain" }}
+                />
               </div>
               <div className={styles.cardContent}>
                 <h3>{item.name}</h3>
@@ -215,18 +225,27 @@ function ProductPageContent() {
   const [search, setSearch] = useState('');
 
   // ── Determine page heading ────────────────────────────────────────────────
-  let headingName = ''
+  let headingName = '';
   if (parentCategoryId) {
-    headingName = products[0]?.parentCategoryId?.name || 'Dental Equipment';
+    const formattedName = decodeURIComponent(parentCategoryId)
+      .replace(/[-_]+/g, ' ')
+      .replace(/\b\w/g, (c) => c.toUpperCase());
+    headingName = products[0]?.parentCategoryId?.name || formattedName || 'Dental Equipment';
   } else if (categoryId) {
-    headingName = products[0]?.category?.name || 'Dental Equipment';
+    const formattedName = decodeURIComponent(categoryId)
+      .replace(/[-_]+/g, ' ')
+      .replace(/\b\w/g, (c) => c.toUpperCase());
+    headingName = products[0]?.category?.name || formattedName || 'Dental Equipment';
   } else if (subCategoryId || subCategoryByBanner) {
-    headingName = products[0]?.subCategory?.name || 'Dental Equipment';
+    const formattedName = decodeURIComponent(subCategoryId || subCategoryByBanner)
+      .replace(/[-_]+/g, ' ')
+      .replace(/\b\w/g, (c) => c.toUpperCase());
+    headingName = products[0]?.subCategory?.name || formattedName || 'Dental Equipment';
   } else {
     headingName = 'Dental Equipment';
   }
 
-
+  console.log("subCategoryId", subCategoryId)
   // ── Fetch products based on active filter ─────────────────────────────────
   useEffect(() => {
     const fetchProducts = async () => {
@@ -235,17 +254,16 @@ function ProductPageContent() {
       try {
         let endpoint;
         if (subCategoryId || subCategoryByBanner) {
-          endpoint = `product/by-subcategory/${subCategoryId || subCategoryByBanner}`;
+          endpoint = `product/by-subcategory/${encodeURIComponent(subCategoryId || subCategoryByBanner)}`;
         } else if (categoryId) {
-          endpoint = `product/by-category/${categoryId}`;
+          endpoint = `product/by-category/${encodeURIComponent(categoryId)}`;
         } else if (parentCategoryId) {
-          endpoint = `product/by-parent/${parentCategoryId}`;
+          endpoint = `product/by-parent/${encodeURIComponent(parentCategoryId)}`;
         } else {
           endpoint = 'product/';
         }
 
         const res = await getData(endpoint);
-        console.log("SSSSSSS===>", res)
         if (res?.success) {
           setProducts(res.data || []);
         }
@@ -259,10 +277,26 @@ function ProductPageContent() {
     fetchProducts();
   }, [categoryId, subCategoryId, subCategoryByBanner, parentCategoryId]);
 
-  // ── Client-side search filter ─────────────────────────────────────────────
-  const filteredProducts = products.filter((item) =>
-    item.name?.toLowerCase().includes(search.toLowerCase())
-  );
+  // ── Enhanced search filter by product name, model, sku, category, description ──
+  const filteredProducts = products.filter((item) => {
+    if (!search || !search.trim()) return true;
+    const searchTerms = search.toLowerCase().trim().split(/\s+/).filter(Boolean);
+    const searchTarget = [
+      item.name,
+      item.sku,
+      item.model,
+      item.category?.name,
+      item.subCategory?.name,
+      item.parentCategoryId?.name,
+      item.description,
+      ...(Array.isArray(item.features) ? item.features : []),
+    ]
+      .filter(Boolean)
+      .join(' ')
+      .toLowerCase();
+
+    return searchTerms.every((term) => searchTarget.includes(term));
+  });
 
   return (
     <section className={styles.productPage}>
@@ -273,8 +307,6 @@ function ProductPageContent() {
 
         {/* HEADING */}
         <div className={styles.heading}>
-          {/* <span>TECHNOMAC PRODUCTS</span> */}
-          {/* <h1>Explore Our {headingName}</h1> */}
           <h1>Explore Our Medical & {headingName}</h1>
           <p>
             From advanced medical devices to cutting-edge dental equipment,
@@ -295,7 +327,7 @@ function ProductPageContent() {
         <div className={styles.searchBox}>
           <input
             type="text"
-            placeholder="Search dental products..."
+            placeholder="Search dental products by name, model..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />

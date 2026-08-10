@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Head from "next/head";
+import { useRouter } from "next/router";
 import { FaCheckCircle, FaFilePdf, FaWhatsapp } from "react-icons/fa";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation } from "swiper/modules";
@@ -10,9 +11,22 @@ import Breadcrumb from "../../common/Breadcrumb/Breadcrumb";
 import { useSearchParams } from "next/navigation";
 import { getData } from "../../../services/FetchNodeServices";
 
+// Helper to convert product name to clean URL slug without %20
+const toSlug = (text) => {
+  if (!text) return "";
+  return text
+    .toLowerCase()
+    .trim()
+    .replace(/[^\w\s-]/g, "")
+    .replace(/[\s_-]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+};
+
 export default function ProductDetails() {
+  const router = useRouter();
   const searchParams = useSearchParams();
-  const productId = searchParams.get("productId");
+  const productIdentifier = router?.query?.slug || searchParams?.get("productId") || router?.query?.productId;
+
   const [product, setProduct] = useState({});
   const [relatedProducts, setRelatedProducts] = useState([]);
   const [activeImage, setActiveImage] = useState("");
@@ -20,7 +34,8 @@ export default function ProductDetails() {
     transform: "scale(1)",
     transformOrigin: "50% 50%",
   });
-  const [contactInfo, setContactInfo] = useState({})
+  const [contactInfo, setContactInfo] = useState({});
+
   const handleMouseMove = (e) => {
     const rect = e.currentTarget.getBoundingClientRect();
     const x = ((e.clientX - rect.left) / rect.width) * 100;
@@ -39,10 +54,10 @@ export default function ProductDetails() {
     });
   };
 
-  const fetchProductById = async () => {
-    if (!productId) return;
+  const fetchProduct = async () => {
+    if (!productIdentifier) return;
     try {
-      let response = await getData(`product/${productId}`);
+      let response = await getData(`product/${encodeURIComponent(productIdentifier)}`);
       if (response?.success === true && response?.data) {
         setProduct(response.data);
         if (Array.isArray(response.data.images) && response.data.images.length > 0) {
@@ -50,7 +65,7 @@ export default function ProductDetails() {
         }
       }
     } catch (e) {
-      console.error("fetchProductById error:", e);
+      console.error("fetchProduct error:", e);
     }
   };
 
@@ -67,8 +82,8 @@ export default function ProductDetails() {
   };
 
   useEffect(() => {
-    fetchProductById();
-  }, [productId]);
+    fetchProduct();
+  }, [productIdentifier]);
 
   useEffect(() => {
     if (product?.category?._id) {
@@ -139,7 +154,6 @@ export default function ProductDetails() {
       },
     }
     : null;
-
 
   useEffect(() => {
     const fetchContactInfo = async () => {
@@ -343,7 +357,7 @@ export default function ProductDetails() {
                         <span>{item?.category?.name}</span>
                         <h3>{item.name}</h3>
                         <p>{item?.description}</p>
-                        <Link href={`/product/${item?.name}?productId=${item._id}`}>
+                        <Link href={`/product/${item?.slug || toSlug(item?.name) || item._id}`}>
                           <button>View Details</button>
                         </Link>
                       </div>

@@ -2,6 +2,7 @@ const cloudinary = require('../config/cloudinary');
 const { Product } = require('../models/Product');
 const { SubCategory } = require('../models/Subcategory ');
 const { Category } = require('../models/Category');
+const { ParentCategory } = require('../models/ParentCategory');
 const mongoose = require('mongoose');
 
 // ── Helper: Slug generator ───────────────────────────────────────────────────
@@ -130,11 +131,41 @@ exports.getAllProducts = async (req, res) => {
 // ── GET BY CATEGORY ───────────────────────────────────────────────────────────
 exports.getProductsByCategory = async (req, res) => {
   try {
+    const { categoryId } = req.params;
+    if (!categoryId) {
+      return res.status(400).json({ success: false, message: 'Category identifier is required' });
+    }
+
+    let categoryDoc = null;
+    if (mongoose.Types.ObjectId.isValid(categoryId)) {
+      categoryDoc = await Category.findById(categoryId);
+    }
+
+    if (!categoryDoc) {
+      const decodedParam = decodeURIComponent(categoryId).trim();
+      const normalizedParam = decodedParam.replace(/[-_]+/g, ' ').trim();
+      const slugPattern = new RegExp(`^${decodedParam.replace(/[-_]/g, '[-_\\s]')}$`, 'i');
+      const namePattern = new RegExp(`^${normalizedParam}$`, 'i');
+
+      categoryDoc = await Category.findOne({
+        $or: [
+          { name: { $regex: namePattern } },
+          { name: { $regex: slugPattern } },
+          { name: decodedParam },
+        ],
+      });
+    }
+
+    if (!categoryDoc) {
+      return res.status(200).json({ success: true, data: [] });
+    }
+
     const products = await populateProduct(
-      Product.find({ category: req.params.categoryId, isActive: true })
+      Product.find({ category: categoryDoc._id, isActive: true }).sort({ createdAt: -1 })
     );
-    res.status(200).json({ success: true, data: products });
+    res.status(200).json({ success: true, data: products, category: categoryDoc });
   } catch (error) {
+    console.error('getProductsByCategory error:', error);
     res.status(500).json({ success: false, message: error.message });
   }
 };
@@ -142,11 +173,41 @@ exports.getProductsByCategory = async (req, res) => {
 // ── GET BY SUBCATEGORY ────────────────────────────────────────────────────────
 exports.getProductsBySubCategory = async (req, res) => {
   try {
+    const { subCategoryId } = req.params;
+    if (!subCategoryId) {
+      return res.status(400).json({ success: false, message: 'Subcategory identifier is required' });
+    }
+console.log("subCategoryId ",subCategoryId )
+    let subCategoryDoc = null;
+    if (mongoose.Types.ObjectId.isValid(subCategoryId)) {
+      subCategoryDoc = await SubCategory.findById(subCategoryId);
+    }
+
+    if (!subCategoryDoc) {
+      const decodedParam = decodeURIComponent(subCategoryId).trim();
+      const normalizedParam = decodedParam.replace(/[-_]+/g, ' ').trim();
+      const slugPattern = new RegExp(`^${decodedParam.replace(/[-_]/g, '[-_\\s]')}$`, 'i');
+      const namePattern = new RegExp(`^${normalizedParam}$`, 'i');
+
+      subCategoryDoc = await SubCategory.findOne({
+        $or: [
+          { name: { $regex: namePattern } },
+          { name: { $regex: slugPattern } },
+          { name: decodedParam },
+        ],
+      });
+    }
+
+    if (!subCategoryDoc) {
+      return res.status(200).json({ success: true, data: [] });
+    }
+
     const products = await populateProduct(
-      Product.find({ subCategory: req.params.subCategoryId, isActive: true })
+      Product.find({ subCategory: subCategoryDoc._id, isActive: true }).sort({ createdAt: -1 })
     );
-    res.status(200).json({ success: true, data: products });
+    res.status(200).json({ success: true, data: products, subCategory: subCategoryDoc });
   } catch (error) {
+    console.error('getProductsBySubCategory error:', error);
     res.status(500).json({ success: false, message: error.message });
   }
 };
@@ -156,12 +217,36 @@ exports.getProductsByParentCategory = async (req, res) => {
   try {
     const { parentId } = req.params;
 
-    if (!mongoose.Types.ObjectId.isValid(parentId)) {
-      return res.status(400).json({ success: false, message: 'Invalid parentId' });
+    if (!parentId) {
+      return res.status(400).json({ success: false, message: 'Parent category identifier is required' });
+    }
+
+    let parentCategoryDoc = null;
+    if (mongoose.Types.ObjectId.isValid(parentId)) {
+      parentCategoryDoc = await ParentCategory.findById(parentId);
+    }
+
+    if (!parentCategoryDoc) {
+      const decodedParam = decodeURIComponent(parentId).trim();
+      const normalizedParam = decodedParam.replace(/[-_]+/g, ' ').trim();
+      const slugPattern = new RegExp(`^${decodedParam.replace(/[-_]/g, '[-_\\s]')}$`, 'i');
+      const namePattern = new RegExp(`^${normalizedParam}$`, 'i');
+
+      parentCategoryDoc = await ParentCategory.findOne({
+        $or: [
+          { name: { $regex: namePattern } },
+          { name: { $regex: slugPattern } },
+          { name: decodedParam },
+        ],
+      });
+    }
+
+    if (!parentCategoryDoc) {
+      return res.status(200).json({ success: true, data: [] });
     }
 
     const products = await Product.find({
-      parentCategoryId: parentId,
+      parentCategoryId: parentCategoryDoc._id,
       isActive: true,
     })
       .populate('parentCategoryId', 'name image')
@@ -169,31 +254,84 @@ exports.getProductsByParentCategory = async (req, res) => {
       .populate('subCategory', 'name image')
       .sort({ createdAt: -1 });
 
-    res.status(200).json({ success: true, data: products });
+    res.status(200).json({ success: true, data: products, parentCategory: parentCategoryDoc });
   } catch (error) {
     console.error('getProductsByParentCategory:', error);
     res.status(500).json({ success: false, message: error.message });
   }
 };
 
-// ── GET SINGLE BY ID ──────────────────────────────────────────────────────────
+// ── GET SINGLE BY ID OR SLUG/NAME ─────────────────────────────────────────────
 exports.getProductById = async (req, res) => {
   try {
-    const product = await populateProduct(Product.findById(req.params.id));
+    const { id } = req.params;
+    if (!id) return res.status(400).json({ success: false, message: 'Product identifier is required' });
+
+    let product = null;
+    if (mongoose.Types.ObjectId.isValid(id)) {
+      product = await populateProduct(Product.findById(id));
+    }
+
+    if (!product) {
+      const decoded = decodeURIComponent(id).trim();
+      const normalized = decoded.replace(/[-_]+/g, ' ').trim();
+      const slugPattern = new RegExp(`^${decoded.replace(/[-_]/g, '[-_\\s]')}$`, 'i');
+      const namePattern = new RegExp(`^${normalized}$`, 'i');
+
+      product = await populateProduct(
+        Product.findOne({
+          $or: [
+            { slug: decoded.toLowerCase() },
+            { slug: { $regex: slugPattern } },
+            { name: { $regex: namePattern } },
+            { name: { $regex: slugPattern } },
+            { name: decoded },
+            { sku: decoded },
+          ],
+        })
+      );
+    }
+
     if (!product) return res.status(404).json({ success: false, message: 'Product not found' });
     res.status(200).json({ success: true, data: product });
   } catch (error) {
+    console.error('getProductById error:', error);
     res.status(500).json({ success: false, message: error.message });
   }
 };
 
-// ── GET SINGLE BY SLUG ────────────────────────────────────────────────────────
+// ── GET SINGLE BY SLUG OR NAME ────────────────────────────────────────────────
 exports.getProductBySlug = async (req, res) => {
   try {
-    const product = await populateProduct(Product.findOne({ slug: req.params.slug }));
+    const { slug } = req.params;
+    if (!slug) return res.status(400).json({ success: false, message: 'Slug is required' });
+
+    const decoded = decodeURIComponent(slug).trim();
+    const normalized = decoded.replace(/[-_]+/g, ' ').trim();
+    const slugPattern = new RegExp(`^${decoded.replace(/[-_]/g, '[-_\\s]')}$`, 'i');
+    const namePattern = new RegExp(`^${normalized}$`, 'i');
+
+    let product = await populateProduct(
+      Product.findOne({
+        $or: [
+          { slug: decoded.toLowerCase() },
+          { slug: { $regex: slugPattern } },
+          { name: { $regex: namePattern } },
+          { name: { $regex: slugPattern } },
+          { name: decoded },
+          { sku: decoded },
+        ],
+      })
+    );
+
+    if (!product && mongoose.Types.ObjectId.isValid(slug)) {
+      product = await populateProduct(Product.findById(slug));
+    }
+
     if (!product) return res.status(404).json({ success: false, message: 'Product not found' });
     res.status(200).json({ success: true, data: product });
   } catch (error) {
+    console.error('getProductBySlug error:', error);
     res.status(500).json({ success: false, message: error.message });
   }
 };

@@ -273,10 +273,16 @@
   z-index: 2;
 }
 
-.cardContent p{
-    font-size: 14px;
-    color: #334155;
-    line-height: 1.8;
+.cardContent p {
+  font-size: 14px;
+  color: #334155;
+  line-height: 1.6;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: 8px;
 }
 
 /* CATEGORY */
@@ -448,7 +454,16 @@ content: "TECHNOMAC";
   }
 
   .cardContent h3 {
-
     font-size: 12px;
+  }
+
+  .cardContent p {
+    font-size: 11px;
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 }

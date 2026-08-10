@@ -444,6 +444,16 @@ export default function Header() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  const toSlug = (text) => {
+    if (!text) return "";
+    return text
+      .toLowerCase()
+      .trim()
+      .replace(/[^\w\s-]/g, "")
+      .replace(/[\s_-]+/g, "-")
+      .replace(/^-+|-+$/g, "");
+  };
+
   return (
     <>
       <header className={`${styles.header} ${sticky ? styles.sticky : ""}`}>
@@ -503,8 +513,8 @@ export default function Header() {
                           <div
                             key={item._id}
                             className={`${styles.categoryItem} ${activeCategory?._id === item._id
-                                ? styles.activeCategory
-                                : ""
+                              ? styles.activeCategory
+                              : ""
                               }`}
                             onMouseEnter={() => setActiveCategory(item)}
                           >
@@ -528,7 +538,7 @@ export default function Header() {
                           subCategories.map((sub) => (
                             <Link
                               // category=${activeCategory?._id}&
-                              href={`/products?category=${sub._id}`}
+                              href={`/products?category=${toSlug(sub.name)}`}
                               key={sub._id}
                             >
                               {/* ✅ adjust field name to match your API */}

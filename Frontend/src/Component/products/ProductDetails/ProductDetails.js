@@ -162,14 +162,11 @@ export default function ProductDetails() {
         if (res?.success && res?.data) {
           setContactInfo({
             salesPhone:
-              res.data.salesPhone ||
-              "+91-8448825572, +91-9268825571, +91-9599090411",
-            servicePhone: res.data.servicePhone || "+91 9311125574",
-            email: res.data.email || "info@technomac.com",
-            address:
-              res.data.address ||
-              "Plot no.-88, Pocket- L, Sector 1, Bawana Industrial Area, DSIIDC Sub-city, New Delhi-110039, India",
-            whatsappPhone: res.data.whatsappPhone || "+919311125574",
+              res.data.salesPhone,
+            servicePhone: res.data.servicePhone,
+            email: res.data.email,
+            address: res.data.address,
+            whatsappPhone: res.data.whatsappPhone,
           });
         }
       } catch (err) {

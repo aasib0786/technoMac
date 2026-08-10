@@ -219,14 +219,24 @@ function ProductPageContent() {
   const subCategoryId = searchParams.get('sub');
   const parentCategoryId = searchParams.get('parentCategory');
   const subCategoryByBanner = searchParams.get('subCategory');
+  const urlSearch = searchParams.get('search') || searchParams.get('q') || '';
 
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [search, setSearch] = useState('');
+  const [search, setSearch] = useState(urlSearch);
+
+  // Sync search state when URL search query parameter changes
+  useEffect(() => {
+    if (urlSearch) {
+      setSearch(urlSearch);
+    }
+  }, [urlSearch]);
 
   // ── Determine page heading ────────────────────────────────────────────────
   let headingName = '';
-  if (parentCategoryId) {
+  if (urlSearch) {
+    headingName = `Results for "${urlSearch}"`;
+  } else if (parentCategoryId) {
     const formattedName = decodeURIComponent(parentCategoryId)
       .replace(/[-_]+/g, ' ')
       .replace(/\b\w/g, (c) => c.toUpperCase());

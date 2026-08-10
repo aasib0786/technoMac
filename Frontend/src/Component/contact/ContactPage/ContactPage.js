@@ -11,24 +11,13 @@ import { postData, getData } from "../../../services/FetchNodeServices";
 
 export default function ContactPage() {
   const [form, setForm] = useState({
-    fullName: "",
-    phoneNumber: "",
-    email: "",
-    productInterest: "",
-    message: "",
+    fullName: "", phoneNumber: "", email: "", productInterest: "", message: "",
   });
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
   const [successMsg, setSuccessMsg] = useState("");
 
-  const [contactInfo, setContactInfo] = useState({
-    salesPhone: "+91-8448825572, +91-9268825571, +91-9599090411",
-    servicePhone: "+91 9311125574",
-    email: "info@technomac.com",
-    address:
-      "Plot no.-88, Pocket- L, Sector 1, Bawana Industrial Area, DSIIDC Sub-city, New Delhi-110039, India",
-    whatsappPhone: "+919311125574",
-  });
+  const [contactInfo, setContactInfo] = useState({ salesPhone: "", servicePhone: "", email: "", address: "", whatsappPhone: "", });
 
   useEffect(() => {
     const fetchContactInfo = async () => {
@@ -37,14 +26,12 @@ export default function ContactPage() {
         if (res?.success && res?.data) {
           setContactInfo({
             salesPhone:
-              res.data.salesPhone ||
-              "+91-8448825572, +91-9268825571, +91-9599090411",
-            servicePhone: res.data.servicePhone || "+91 9311125574",
-            email: res.data.email || "info@technomac.com",
+              res.data.salesPhone,
+            servicePhone: res.data.servicePhone,
+            email: res.data.email,
             address:
-              res.data.address ||
-              "Plot no.-88, Pocket- L, Sector 1, Bawana Industrial Area, DSIIDC Sub-city, New Delhi-110039, India",
-            whatsappPhone: res.data.whatsappPhone || "+919311125574",
+              res.data.address,
+            whatsappPhone: res.data.whatsappPhone,
           });
         }
       } catch (err) {
@@ -130,7 +117,7 @@ export default function ContactPage() {
   return (
     <section className={styles.contactSection}>
       <div className="container">
-        <div className={styles.contactBox} style={{marginBottom:'20px'}}>
+        <div className={styles.contactBox} style={{ marginBottom: '20px' }}>
           <div className="row g-10">
             {/* LEFT COLUMN - INFO */}
             <div className="col-lg-5 col-12">
@@ -192,11 +179,10 @@ export default function ContactPage() {
                 {/* SUCCESS MESSAGE */}
                 {successMsg && (
                   <div
-                    className={`alert ${
-                      successMsg.includes("Thank you")
-                        ? "alert-success"
-                        : "alert-danger"
-                    } mb-3`}
+                    className={`alert ${successMsg.includes("Thank you")
+                      ? "alert-success"
+                      : "alert-danger"
+                      } mb-3`}
                     style={{ fontSize: "14px", borderRadius: "8px" }}
                   >
                     {successMsg}

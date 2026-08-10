@@ -454,10 +454,25 @@ exports.searchProducts = async (req, res) => {
     const filter = { isActive: true };
 
     if (q?.trim()) {
-      filter.$or = [
-        { name: { $regex: q.trim(), $options: 'i' } },
-        { sku: { $regex: q.trim(), $options: 'i' } },
-      ];
+      const terms = q.trim().split(/\s+/).filter(Boolean);
+      if (terms.length === 1) {
+        const singleTerm = terms[0];
+        filter.$or = [
+          { name: { $regex: singleTerm, $options: 'i' } },
+          { slug: { $regex: singleTerm, $options: 'i' } },
+          { sku: { $regex: singleTerm, $options: 'i' } },
+          { description: { $regex: singleTerm, $options: 'i' } },
+        ];
+      } else {
+        filter.$and = terms.map((term) => ({
+          $or: [
+            { name: { $regex: term, $options: 'i' } },
+            { slug: { $regex: term, $options: 'i' } },
+            { sku: { $regex: term, $options: 'i' } },
+            { description: { $regex: term, $options: 'i' } },
+          ],
+        }));
+      }
     }
     if (parentCategoryId?.trim()) filter.parentCategoryId = parentCategoryId.trim();
     if (category?.trim()) filter.category = category.trim();

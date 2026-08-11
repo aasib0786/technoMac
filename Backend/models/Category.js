@@ -30,4 +30,8 @@ const CategorySchema = new mongoose.Schema(
   { timestamps: true },
 );
 
+// Performance Indexes
+CategorySchema.index({ parentCategoryId: 1, isActive: 1 });
+CategorySchema.index({ isActive: 1, createdAt: -1 });
+
 exports.Category = mongoose.model('Category', CategorySchema);

@@ -1,0 +1,400 @@
+/* SkeletonLoader.module.css - Modern shimmer skeleton loader */
+.shimmer {
+  background: linear-gradient(
+    90deg,
+    #f1f5f9 0%,
+    #e2e8f0 35%,
+    #cbd5e1 50%,
+    #e2e8f0 65%,
+    #f1f5f9 100%
+  );
+  background-size: 300% 100%;
+  animation: shimmerWave 1.6s ease-in-out infinite;
+  border-radius: 8px;
+}
+
+@keyframes shimmerWave {
+  0% {
+    background-position: 100% 0;
+  }
+  100% {
+    background-position: -100% 0;
+  }
+}
+
+/* Product Skeleton Card */
+.productCard {
+  background: #ffffff;
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid #f1f5f9;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04);
+  padding: 12px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.productImage {
+  width: 100%;
+  height: 220px;
+  border-radius: 10px;
+  margin-bottom: 14px;
+}
+
+.productTag {
+  width: 70px;
+  height: 16px;
+  border-radius: 12px;
+  margin-bottom: 8px;
+}
+
+.productTitle {
+  width: 85%;
+  height: 20px;
+  border-radius: 6px;
+  margin-bottom: 8px;
+}
+
+.productTitleShort {
+  width: 55%;
+  height: 16px;
+  border-radius: 6px;
+  margin-bottom: 12px;
+}
+
+/* Category Skeleton Card */
+.categoryCard {
+  background: #ffffff;
+  border-radius: 14px;
+  border: 1px solid #f1f5f9;
+  padding: 16px 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+}
+
+.categoryImage {
+  width: 90px;
+  height: 70px;
+  border-radius: 8px;
+  margin-bottom: 10px;
+}
+
+.categoryTitle {
+  width: 75%;
+  height: 16px;
+  border-radius: 6px;
+  margin-bottom: 6px;
+}
+
+.categoryBtn {
+  width: 50%;
+  height: 12px;
+  border-radius: 4px;
+}
+
+/* Category Strip (Horizontal/Grid) */
+.categoryStripItem {
+  background: #ffffff;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.stripImage {
+  width: 100%;
+  height: 90px;
+  border-radius: 8px;
+  margin-bottom: 8px;
+}
+
+.stripText {
+  width: 70%;
+  height: 14px;
+  border-radius: 4px;
+}
+
+/* Detail Page Skeleton */
+.detailWrapper {
+  padding: 40px 0;
+}
+
+.detailImage {
+  width: 100%;
+  height: 400px;
+  border-radius: 16px;
+  margin-bottom: 20px;
+}
+
+.detailThumbnails {
+  display: flex;
+  gap: 12px;
+}
+
+.detailThumb {
+  width: 80px;
+  height: 80px;
+  border-radius: 10px;
+}
+
+.detailBadge {
+  width: 100px;
+  height: 24px;
+  border-radius: 20px;
+  margin-bottom: 16px;
+}
+
+.detailTitle {
+  width: 80%;
+  height: 36px;
+  border-radius: 8px;
+  margin-bottom: 14px;
+}
+
+.detailSubtitle {
+  width: 60%;
+  height: 22px;
+  border-radius: 6px;
+  margin-bottom: 24px;
+}
+
+.detailParagraph {
+  width: 100%;
+  height: 16px;
+  border-radius: 6px;
+  margin-bottom: 10px;
+}
+
+.detailParagraphShort {
+  width: 75%;
+  height: 16px;
+  border-radius: 6px;
+  margin-bottom: 28px;
+}
+
+.detailBtn {
+  width: 180px;
+  height: 48px;
+  border-radius: 28px;
+}
+
+/* Blog Skeleton Card */
+.blogCard {
+  background: #ffffff;
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.blogImage {
+  width: 100%;
+  height: 200px;
+}
+
+.blogContent {
+  padding: 16px;
+}
+
+.blogTag {
+  width: 70px;
+  height: 16px;
+  border-radius: 12px;
+  margin-bottom: 10px;
+}
+
+.blogTitle {
+  width: 90%;
+  height: 20px;
+  border-radius: 6px;
+  margin-bottom: 8px;
+}
+
+.blogDesc {
+  width: 100%;
+  height: 14px;
+  border-radius: 4px;
+  margin-bottom: 6px;
+}
+
+.blogDescShort {
+  width: 60%;
+  height: 14px;
+  border-radius: 4px;
+  margin-bottom: 16px;
+}
+
+.blogFooter {
+  width: 90px;
+  height: 14px;
+  border-radius: 4px;
+}
+
+/* Update Card Skeleton */
+.updateCard {
+  background: #ffffff;
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04);
+  padding: 16px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.updateImage {
+  width: 200px;
+  height: 200px;
+  border-radius: 12px;
+  margin-bottom: 14px;
+}
+
+.updateTitle {
+  width: 80%;
+  height: 20px;
+  border-radius: 6px;
+  margin-bottom: 8px;
+}
+
+.updateSubtitle {
+  width: 60%;
+  height: 14px;
+  border-radius: 4px;
+}
+
+/* Review Card Skeleton */
+.reviewCard {
+  background: #ffffff;
+  border-radius: 16px;
+  border: 1px solid #e2e8f0;
+  padding: 24px;
+  height: 100%;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.03);
+}
+
+.reviewStars {
+  width: 90px;
+  height: 18px;
+  border-radius: 6px;
+  margin-bottom: 14px;
+}
+
+.reviewText {
+  width: 100%;
+  height: 14px;
+  border-radius: 4px;
+  margin-bottom: 8px;
+}
+
+.reviewTextShort {
+  width: 70%;
+  height: 14px;
+  border-radius: 4px;
+  margin-bottom: 18px;
+}
+
+.reviewAuthor {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.reviewAvatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+}
+
+.reviewAuthorInfo {
+  flex: 1;
+}
+
+.reviewName {
+  width: 100px;
+  height: 16px;
+  border-radius: 4px;
+  margin-bottom: 4px;
+}
+
+.reviewRole {
+  width: 70px;
+  height: 12px;
+  border-radius: 4px;
+}
+
+/* FAQ Item Skeleton */
+.faqItem {
+  background: #ffffff;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  padding: 18px 20px;
+  margin-bottom: 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.faqQuestion {
+  width: 75%;
+  height: 18px;
+  border-radius: 6px;
+}
+
+.faqIcon {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+}
+
+/* Client Logo Skeleton */
+.clientCard {
+  background: #ffffff;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+.clientLogo {
+  width: 80%;
+  height: 48px;
+  border-radius: 8px;
+}
+
+/* Certificate Card Skeleton */
+.certificateCard {
+  background: #ffffff;
+  border-radius: 14px;
+  border: 1px solid #e2e8f0;
+  overflow: hidden;
+  padding: 14px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04);
+}
+
+.certificateImage {
+  width: 100%;
+  height: 240px;
+  border-radius: 10px;
+  margin-bottom: 12px;
+}
+
+.certificateTitle {
+  width: 70%;
+  height: 18px;
+  border-radius: 6px;
+  margin: 0 auto;
+}

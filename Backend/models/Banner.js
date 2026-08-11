@@ -38,4 +38,8 @@ const BannerSchema = new mongoose.Schema(
   },
 );
 
+// Performance Indexes
+BannerSchema.index({ isActive: 1, createdAt: -1 });
+BannerSchema.index({ categoryId: 1, isActive: 1 });
+
 module.exports = mongoose.model('Banner', BannerSchema);

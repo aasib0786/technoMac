@@ -19,7 +19,7 @@ exports.getAllFAQs = async (req, res) => {
     const faqs = await FAQ.find({ isActive: true }).sort({
       order: 1,
       createdAt: 1,
-    });
+    }).lean();
     res.status(200).json({ success: true, data: faqs });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
@@ -29,7 +29,7 @@ exports.getAllFAQs = async (req, res) => {
 // ── GET ALL (Admin — inactive bhi)  →  GET /api/faq/admin/all ──
 exports.getAllFAQsAdmin = async (req, res) => {
   try {
-    const faqs = await FAQ.find().sort({ order: 1, createdAt: 1 });
+    const faqs = await FAQ.find().sort({ order: 1, createdAt: 1 }).lean();
     res.status(200).json({ success: true, data: faqs });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
@@ -39,7 +39,7 @@ exports.getAllFAQsAdmin = async (req, res) => {
 // ── GET SINGLE  →  GET /api/faq/:id ────────────────────────────
 exports.getFAQById = async (req, res) => {
   try {
-    const faq = await FAQ.findById(req.params.id);
+    const faq = await FAQ.findById(req.params.id).lean();
     if (!faq)
       return res.status(404).json({ success: false, message: 'FAQ not found' });
 

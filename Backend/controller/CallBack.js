@@ -199,7 +199,7 @@ exports.createCallBack = async (req, res) => {
 // ─────────────────────────────────────────────────────────────
 exports.getAllCallBacks = async (req, res) => {
     try {
-        const callBacks = await CallBack.find().sort({ createdAt: -1 });
+        const callBacks = await CallBack.find().sort({ createdAt: -1 }).lean();
 
         res.status(200).json({
             success: true,
@@ -216,7 +216,7 @@ exports.getAllCallBacks = async (req, res) => {
 // ─────────────────────────────────────────────────────────────
 exports.getCallBackById = async (req, res) => {
     try {
-        const callBack = await CallBack.findById(req.params.id);
+        const callBack = await CallBack.findById(req.params.id).lean();
         if (!callBack) {
             return res.status(404).json({ success: false, message: 'Call back request not found' });
         }

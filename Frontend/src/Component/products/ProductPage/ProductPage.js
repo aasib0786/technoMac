@@ -10,6 +10,7 @@ import categoryStyles from "../../Home/HomeProducts/HomeProducts.module.css";
 import Link from "next/link";
 import Image from "next/image";
 import dummyImage from "../../../../Images/landing_doctors.png";
+import { optimizeImageUrl } from "../../../utils/imageOptimizer";
 
 // Helper to convert names to URL-safe slugs without %20
 const toSlug = (text) => {
@@ -23,10 +24,11 @@ const toSlug = (text) => {
 };
 
 function CardImage({ src, alt }) {
-  const [imgSrc, setImgSrc] = useState(src || dummyImage);
+  const initial = optimizeImageUrl(src || dummyImage, { width: 500 });
+  const [imgSrc, setImgSrc] = useState(initial);
 
   useEffect(() => {
-    setImgSrc(src || dummyImage);
+    setImgSrc(optimizeImageUrl(src || dummyImage, { width: 500 }));
   }, [src]);
 
   return (
@@ -35,6 +37,7 @@ function CardImage({ src, alt }) {
       height={300}
       src={imgSrc}
       alt={alt}
+      loading="lazy"
       onError={() => setImgSrc(dummyImage)}
       style={{ objectFit: "cover", width: "100%", height: "100%" }}
     />
@@ -57,7 +60,7 @@ function CategoryStrip({ parentCategoryId }) {
           setCategories(
             res.data.map((item) => ({
               _id: item._id,
-              image: item.image || item.imageUrl || item.category_image || '',
+              image: optimizeImageUrl(item.image || item.imageUrl || item.category_image || '', { width: 250 }),
               name: item.name || item.title || '',
               desc: item.description || item.desc || '',
             }))
@@ -76,15 +79,7 @@ function CategoryStrip({ parentCategoryId }) {
   if (!parentCategoryId || categories.length === 0) return null;
 
   if (loading) {
-    return (
-      <div className="row mb-4">
-        {Array.from({ length: 4 }).map((_, i) => (
-          <div key={i} className="col-lg-3 col-md-6 col-6 mb-3">
-            <div style={{ height: 160, borderRadius: 12, background: '#f0f0f0', animation: 'pulse 1.4s ease-in-out infinite' }} />
-          </div>
-        ))}
-      </div>
-    );
+    return <SkeletonLoader type="category-strip" count={6} />;
   }
 
   return (
@@ -133,7 +128,7 @@ function SubCategoryStrip({ categoryId }) {
           setCategories(
             res.data.map((item) => ({
               _id: item._id,
-              image: item.image || item.imageUrl || item.category_image || '',
+              image: optimizeImageUrl(item.image || item.imageUrl || item.category_image || '', { width: 250 }),
               name: item.name || item.title || '',
               desc: item.description || item.desc || '',
             }))
@@ -152,15 +147,7 @@ function SubCategoryStrip({ categoryId }) {
   if (!categoryId || categories.length === 0) return null;
 
   if (loading) {
-    return (
-      <div className="row mb-4">
-        {Array.from({ length: 4 }).map((_, i) => (
-          <div key={i} className="col-lg-3 col-md-6 col-6 mb-3">
-            <div style={{ height: 160, borderRadius: 12, background: '#f0f0f0', animation: 'pulse 1.4s ease-in-out infinite' }} />
-          </div>
-        ))}
-      </div>
-    );
+    return <SkeletonLoader type="category-strip" count={6} />;
   }
 
   return (
@@ -193,24 +180,7 @@ function SubCategoryStrip({ categoryId }) {
   );
 }
 
-// ─── Skeleton loader for products ────────────────────────────────────────────
-function ProductSkeleton() {
-  return (
-    <div className="row">
-      {Array.from({ length: 6 }).map((_, i) => (
-        <div key={i} className="col-lg-4 col-md-6 col-6 mb-4">
-          <div style={{ borderRadius: 12, overflow: 'hidden', border: '1px solid #e5e7eb' }}>
-            <div style={{ height: 200, background: '#f0f0f0', animation: 'pulse 1.4s ease-in-out infinite' }} />
-            <div style={{ padding: 16 }}>
-              <div style={{ height: 16, background: '#f0f0f0', borderRadius: 6, marginBottom: 8, width: '75%' }} />
-              <div style={{ height: 12, background: '#f0f0f0', borderRadius: 6, width: '50%' }} />
-            </div>
-          </div>
-        </div>
-      ))}
-    </div>
-  );
-}
+import SkeletonLoader from "../../common/Loader/SkeletonLoader";
 
 // ─── Main page content (uses useSearchParams — must be inside Suspense) ──────
 function ProductPageContent() {
@@ -345,7 +315,7 @@ function ProductPageContent() {
 
         {/* PRODUCT GRID */}
         {loading ? (
-          <ProductSkeleton />
+          <SkeletonLoader type="product" count={8} />
         ) : (
           <div className={`row ${styles.productGrid}`}>
             {filteredProducts.length > 0 ? (
@@ -378,7 +348,7 @@ export default function ProductPage() {
       fallback={
         <section style={{ padding: '40px 0' }}>
           <div className="container">
-            <ProductSkeleton />
+            <SkeletonLoader type="product" count={8} />
           </div>
         </section>
       }

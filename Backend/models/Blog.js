@@ -77,4 +77,9 @@ const BlogSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+// Performance Indexes
+BlogSchema.index({ slug: 1 });
+BlogSchema.index({ isActive: 1, isFeatured: -1, createdAt: -1 });
+BlogSchema.index({ category: 1, isActive: 1 });
+
 module.exports = mongoose.model('Blog', BlogSchema);

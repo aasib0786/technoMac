@@ -54,4 +54,8 @@ const NewUpdateSchema = new mongoose.Schema(
   { timestamps: true },
 );
 
+// Performance Indexes
+NewUpdateSchema.index({ slug: 1 });
+NewUpdateSchema.index({ createdAt: -1 });
+
 module.exports = mongoose.model('NewUpdate', NewUpdateSchema);

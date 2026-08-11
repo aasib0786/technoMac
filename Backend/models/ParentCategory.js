@@ -25,4 +25,7 @@ const ParentCategorySchema = new mongoose.Schema(
   { timestamps: true },
 );
 
+// Performance Indexes
+ParentCategorySchema.index({ isActive: 1, createdAt: -1 });
+
 exports.ParentCategory = mongoose.model('ParentCategory', ParentCategorySchema);

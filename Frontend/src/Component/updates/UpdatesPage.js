@@ -7,32 +7,35 @@ import { useEffect, useState } from "react";
 import { getData } from "../../services/FetchNodeServices";
 import Breadcrumb from "../common/Breadcrumb/Breadcrumb";
 
+import { optimizeImageUrl } from "../../utils/imageOptimizer";
+
+import SkeletonLoader from "../common/Loader/SkeletonLoader";
+
 export default function UpdatesPage() {
   const [update, setUpdate] = useState([])
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(true)
 
   const fetchAllNewUpdate = async () => {
     try {
-      // ✅ Remove leading slash — getData likely prepends serverURL + "/"
+      setLoading(true);
       const response = await getData("newupdate/all");
-      console.log("new updates Response=>", response)
-      if (response.success === true) {
-        setUpdate(response?.data);
+      if (response?.success === true && Array.isArray(response?.data)) {
+        const mapped = response.data.map((item) => ({
+          ...item,
+          image: optimizeImageUrl(item.image, { width: 500 }),
+        }));
+        setUpdate(mapped);
       }
-      // If empty or null → keep static fallback already in state
     } catch (e) {
-      console.error("Category fetch failed, using static fallback:", e?.message);
-      // ✅ Static Category already set as default — nothing extra needed
+      console.error("Updates fetch failed:", e?.message);
     } finally {
       setLoading(false);
     }
   };
 
-  // ✅ useEffect instead of useState
   useEffect(() => {
     fetchAllNewUpdate();
   }, []);
-  // console.log("SSSS==>response", category)
 
   const formatDate = (dateStr) =>
     new Date(dateStr).toLocaleDateString("en-IN", {
@@ -40,20 +43,16 @@ export default function UpdatesPage() {
       month: "short",
       year: "numeric",
     });
+
   return (
-
     <section className={styles.updateSection}>
-
       {/* GLOW */}
-
       <div className={styles.glow}></div>
 
       <div className="container">
         <Breadcrumb pageName="Updates" />
 
-
         {/* TOP */}
-
         <div className={styles.heading}>
           <h1>
             Latest Updates &
@@ -65,12 +64,13 @@ export default function UpdatesPage() {
             medical and dental innovations, and
             healthcare technology trends from Technomac Medical Systems.
           </p>
-
         </div>
 
         {/* GRID */}
-
-        <div className="row">
+        {loading && update.length === 0 ? (
+          <SkeletonLoader type="update" count={8} />
+        ) : (
+          <div className="row">
 
           {update.map((item) => (
 
@@ -157,6 +157,7 @@ export default function UpdatesPage() {
           ))}
 
         </div>
+        )}
 
       </div>
 

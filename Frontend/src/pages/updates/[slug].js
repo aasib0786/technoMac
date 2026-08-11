@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import Head from "next/head";
 import Layout from "../../Component/layout/Layout";
 import UpdateDetails from "../../Component/updates/UpdateDetails";
+import SkeletonLoader from "../../Component/common/Loader/SkeletonLoader";
 import { getData } from "../../services/FetchNodeServices";
 
 export default function UpdateDetailPage() {
@@ -112,20 +113,8 @@ export default function UpdateDetailPage() {
           <title>Loading Update... | TECHNOMAC</title>
         </Head>
         <Layout>
-          <div style={{
-            minHeight: "60vh",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}>
-            <div style={{
-              width: 48, height: 48,
-              border: "4px solid #e5e7eb",
-              borderTopColor: "#3b82f6",
-              borderRadius: "50%",
-              animation: "spin 0.8s linear infinite",
-            }} />
-            <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
+          <div style={{ padding: "60px 0" }}>
+            <SkeletonLoader type="detail" />
           </div>
         </Layout>
       </>

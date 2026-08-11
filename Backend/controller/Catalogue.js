@@ -5,7 +5,7 @@ const cloudinary = require('../config/cloudinary');
 const uploadToCloudinary = (buffer, options) =>
   new Promise((resolve, reject) => {
     cloudinary.uploader
-      .upload_stream(options, (error, result) => {
+      .upload_stream({ quality: 'auto', fetch_format: 'auto', ...options }, (error, result) => {
         if (error) reject(error);
         else resolve(result);
       })
@@ -64,7 +64,7 @@ exports.createCatalogue = async (req, res) => {
 // GET /api/catalogue/all
 exports.getAllCatalogues = async (req, res) => {
   try {
-    const catalogues = await Catalogue.find().sort({ createdAt: -1 });
+    const catalogues = await Catalogue.find().sort({ createdAt: -1 }).lean();
 
     res.status(200).json({
       success: true,
@@ -80,7 +80,7 @@ exports.getAllCatalogues = async (req, res) => {
 // GET /api/catalogue/:id
 exports.getCatalogueById = async (req, res) => {
   try {
-    const catalogue = await Catalogue.findById(req.params.id);
+    const catalogue = await Catalogue.findById(req.params.id).lean();
 
     if (!catalogue) {
       return res.status(404).json({

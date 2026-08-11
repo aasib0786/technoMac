@@ -5,7 +5,7 @@ const cloudinary = require('../config/cloudinary');
 const uploadToCloudinary = (buffer) =>
   new Promise((resolve, reject) => {
     cloudinary.uploader
-      .upload_stream({ folder: 'banners' }, (error, result) => {
+      .upload_stream({ folder: 'banners', quality: 'auto', fetch_format: 'auto' }, (error, result) => {
         if (error) reject(error);
         else resolve(result);
       })
@@ -54,7 +54,7 @@ exports.getAllBanner = async (req, res) => {
     const banners = await Banner.find({ isActive: true }).populate(
       'categoryId',
       'name image',
-    ).populate("subCategoryId");
+    ).populate("subCategoryId").lean();
 
     res.status(200).json({ success: true, banners });
   } catch (error) {
@@ -69,7 +69,7 @@ exports.getBannerByCategory = async (req, res) => {
     const banners = await Banner.find({
       categoryId: req.params.categoryId,
       isActive: true,
-    }).populate('categoryId', 'name image');
+    }).populate('categoryId', 'name image').lean();
 
     res.status(200).json({ success: true, banners });
   } catch (error) {

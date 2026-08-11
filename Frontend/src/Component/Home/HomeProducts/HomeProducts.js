@@ -5,6 +5,8 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import { getData } from "../../../services/FetchNodeServices";
 
+import { optimizeImageUrl } from "../../../utils/imageOptimizer";
+
 // Helper to convert category name into a clean URL slug without %20
 const toSlug = (text) => {
   if (!text) return "";
@@ -16,9 +18,11 @@ const toSlug = (text) => {
     .replace(/^-+|-+$/g, "");
 };
 
+import SkeletonLoader from "../../common/Loader/SkeletonLoader";
+
 export default function HomeProducts() {
   const [category, setCategory] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const fetchAllCategory = async () => {
     try {
@@ -27,7 +31,7 @@ export default function HomeProducts() {
       if (response?.success === true && Array.isArray(response.data)) {
         const mapped = response.data.map((item) => ({
           _id: item._id,
-          image: item.imageUrl || item.image || item.category_image,
+          image: optimizeImageUrl(item.imageUrl || item.image || item.category_image, { width: 400 }),
           name: item.title || item.name || "",
           desc: item.desc || item.description || item.subtitle || "",
           isRemote: item.isActive || true,
@@ -62,7 +66,10 @@ export default function HomeProducts() {
         </div>
 
         {/* GRID */}
-        <div className="row">
+        {loading && category.length === 0 ? (
+          <SkeletonLoader type="category-grid" count={4} />
+        ) : (
+          <div className="row">
           {category.map((item) => (
             <div className="col-lg-3 col-md-6 col-6 mb-4" key={item._id}>
               <Link
@@ -78,6 +85,8 @@ export default function HomeProducts() {
                     height={300}
                     src={item.image}
                     alt={item.name}
+                    loading="lazy"
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
                   />
                 </div>
                 <div className={styles.cardContent}>
@@ -92,6 +101,7 @@ export default function HomeProducts() {
             </div>
           ))}
         </div>
+        )}
       </div>
     </section>
   );

@@ -24,4 +24,7 @@ const FAQSchema = new mongoose.Schema(
   { timestamps: true },
 );
 
+// Performance Indexes
+FAQSchema.index({ isActive: 1, order: 1, createdAt: 1 });
+
 exports.FAQ = mongoose.model('FAQ', FAQSchema);

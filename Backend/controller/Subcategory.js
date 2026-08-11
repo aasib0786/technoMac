@@ -8,7 +8,7 @@ const mongoose = require('mongoose');
 const uploadToCloudinary = (buffer, folder) =>
   new Promise((resolve, reject) => {
     cloudinary.uploader
-      .upload_stream({ folder }, (error, result) => {
+      .upload_stream({ folder, quality: 'auto', fetch_format: 'auto' }, (error, result) => {
         if (error) reject(error);
         else resolve(result);
       })
@@ -19,7 +19,8 @@ const uploadToCloudinary = (buffer, folder) =>
 const populateSubCategory = (query) =>
   query
     .populate('category', 'name image')
-    .populate('parentCategoryId', 'name');
+    .populate('parentCategoryId', 'name')
+    .lean();
 
 // ── CREATE ───────────────────────────────────────────────────────────────────
 exports.createSubCategory = async (req, res) => {
@@ -113,7 +114,7 @@ exports.getSubCategoriesByCategory = async (req, res) => {
           { name: { $regex: slugPattern } },
           { name: decodedParam },
         ],
-      });
+      }).lean();
 
       if (!categoryDoc) {
         return res.status(200).json({ success: true, data: [] });
@@ -121,7 +122,9 @@ exports.getSubCategoriesByCategory = async (req, res) => {
       categoryIdToUse = categoryDoc._id;
     }
 
-    const subCategories = await SubCategory.find({ category: categoryIdToUse, isActive: true }).populate('category');
+    const subCategories = await SubCategory.find({ category: categoryIdToUse, isActive: true })
+      .populate('category')
+      .lean();
     res.status(200).json({ success: true, data: subCategories });
   } catch (error) {
     console.error('getSubCategoriesByCategory:', error);

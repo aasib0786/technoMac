@@ -5,7 +5,7 @@ const cloudinary = require('../config/cloudinary');
 const uploadToCloudinary = (buffer) => {
   return new Promise((resolve, reject) => {
     cloudinary.uploader
-      .upload_stream({ folder: 'testimonials' }, (error, result) => {
+      .upload_stream({ folder: 'testimonials', quality: 'auto', fetch_format: 'auto' }, (error, result) => {
         if (error) reject(error);
         else resolve(result);
       })
@@ -54,7 +54,7 @@ exports.getAllTestimonials = async (req, res) => {
     const testimonials = await Testimonial.find({ isActive: true }).sort({
       order: 1,
       createdAt: -1,
-    });
+    }).lean();
 
     res.status(200).json({ success: true, data: testimonials });
   } catch (error) {
@@ -68,7 +68,7 @@ exports.getAllTestimonialsAdmin = async (req, res) => {
     const testimonials = await Testimonial.find().sort({
       order: 1,
       createdAt: -1,
-    });
+    }).lean();
     res.status(200).json({ success: true, data: testimonials });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
@@ -78,7 +78,7 @@ exports.getAllTestimonialsAdmin = async (req, res) => {
 // ── GET SINGLE  →  GET /api/testimonial/:id ─────────────────────
 exports.getTestimonialById = async (req, res) => {
   try {
-    const testimonial = await Testimonial.findById(req.params.id);
+    const testimonial = await Testimonial.findById(req.params.id).lean();
     if (!testimonial)
       return res
         .status(404)

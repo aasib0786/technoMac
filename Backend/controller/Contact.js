@@ -29,7 +29,7 @@ exports.getAllContacts = async (req, res) => {
   try {
     const contacts = await Contact.find().sort({
       createdAt: -1,
-    });
+    }).lean();
 
     res.status(200).json({
       success: true,

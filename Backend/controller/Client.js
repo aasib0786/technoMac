@@ -7,7 +7,7 @@ const cloudinary = require('../config/cloudinary');
 const uploadToCloudinary = (buffer) => {
     return new Promise((resolve, reject) => {
         cloudinary.uploader
-            .upload_stream({ folder: 'clients' }, (error, result) => {
+            .upload_stream({ folder: 'clients', quality: 'auto', fetch_format: 'auto' }, (error, result) => {
                 if (error) reject(error);
                 else resolve(result);
             })
@@ -59,7 +59,7 @@ exports.createClient = async (req, res) => {
 // ─────────────────────────────────────────────────────────────
 exports.getAllClients = async (req, res) => {
     try {
-        const clients = await Client.find({ isActive: true }).sort({ order: 1, createdAt: 1 });
+        const clients = await Client.find({ isActive: true }).sort({ order: 1, createdAt: 1 }).lean();
 
         res.status(200).json({
             success: true,
@@ -76,7 +76,7 @@ exports.getAllClients = async (req, res) => {
 // ─────────────────────────────────────────────────────────────
 exports.getAllClientsAdmin = async (req, res) => {
     try {
-        const clients = await Client.find().sort({ order: 1, createdAt: 1 });
+        const clients = await Client.find().sort({ order: 1, createdAt: 1 }).lean();
 
         res.status(200).json({
             success: true,
@@ -93,7 +93,7 @@ exports.getAllClientsAdmin = async (req, res) => {
 // ─────────────────────────────────────────────────────────────
 exports.getClientById = async (req, res) => {
     try {
-        const client = await Client.findById(req.params.id);
+        const client = await Client.findById(req.params.id).lean();
         if (!client) {
             return res.status(404).json({ success: false, message: 'Client not found' });
         }

@@ -18,7 +18,7 @@ const generateSlug = (name) =>
 const uploadToCloudinary = (buffer, folder) =>
   new Promise((resolve, reject) => {
     cloudinary.uploader
-      .upload_stream({ folder }, (error, result) => {
+      .upload_stream({ folder, quality: 'auto', fetch_format: 'auto' }, (error, result) => {
         if (error) reject(error);
         else resolve(result.secure_url);
       })
@@ -44,7 +44,8 @@ const populateProduct = (query) =>
   query
     .populate('parentCategoryId', 'name')
     .populate('category', 'name')
-    .populate('subCategory', 'name');
+    .populate('subCategory', 'name')
+    .lean();
 
 // ── CREATE ───────────────────────────────────────────────────────────────────
 exports.createProduct = async (req, res) => {
@@ -252,7 +253,8 @@ exports.getProductsByParentCategory = async (req, res) => {
       .populate('parentCategoryId', 'name image')
       .populate('category', 'name image')
       .populate('subCategory', 'name image')
-      .sort({ createdAt: -1 });
+      .sort({ createdAt: -1 })
+      .lean();
 
     res.status(200).json({ success: true, data: products, parentCategory: parentCategoryDoc });
   } catch (error) {

@@ -3,7 +3,7 @@ const ContactInfo = require('../models/ContactInfo');
 // ── GET CONTACT INFO ──────────────────────────────────────────────────────────
 exports.getContactInfo = async (req, res) => {
   try {
-    let contactInfo = await ContactInfo.findOne();
+    let contactInfo = await ContactInfo.findOne().lean();
     if (!contactInfo) {
       contactInfo = await ContactInfo.create({
         salesPhone: '+91-8448825572, +91-9268825571, +91-9599090411',

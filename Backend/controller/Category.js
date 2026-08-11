@@ -7,7 +7,7 @@ const mongoose = require('mongoose');
 const uploadToCloudinary = (buffer, folder) =>
   new Promise((resolve, reject) => {
     cloudinary.uploader
-      .upload_stream({ folder }, (error, result) => {
+      .upload_stream({ folder, quality: 'auto', fetch_format: 'auto' }, (error, result) => {
         if (error) reject(error);
         else resolve(result);
       })
@@ -63,7 +63,8 @@ exports.getAllCategories = async (req, res) => {
     // ✅ FIX: populate parentCategoryId so frontend can show parent name
     const categories = await Category.find()
       .populate('parentCategoryId', 'name')
-      .sort({ createdAt: -1 });
+      .sort({ createdAt: -1 })
+      .lean();
 
     res.status(200).json({ success: true, data: categories });
   } catch (error) {
@@ -77,7 +78,8 @@ exports.getAllActiveCategories = async (req, res) => {
   try {
     const categories = await Category.find({ isActive: true })
       .populate('parentCategoryId', 'name')
-      .sort({ createdAt: -1 });
+      .sort({ createdAt: -1 })
+      .lean();
 
     res.status(200).json({ success: true, data: categories });
   } catch (error) {
@@ -90,7 +92,8 @@ exports.getAllActiveCategories = async (req, res) => {
 exports.getCategoryById = async (req, res) => {
   try {
     const category = await Category.findById(req.params.id)
-      .populate('parentCategoryId', 'name');
+      .populate('parentCategoryId', 'name')
+      .lean();
 
     if (!category) {
       return res.status(404).json({ success: false, message: 'Category not found' });
@@ -125,7 +128,7 @@ exports.getCategoriesByParent = async (req, res) => {
           { name: { $regex: slugPattern } },
           { name: decodedParam },
         ],
-      });
+      }).lean();
 
       if (!parentDoc) {
         return res.status(200).json({ success: true, data: [] });
@@ -136,7 +139,9 @@ exports.getCategoriesByParent = async (req, res) => {
     const categories = await Category.find({
       parentCategoryId: parentIdToUse,
       isActive: true,
-    }).sort({ createdAt: -1 });
+    })
+      .sort({ createdAt: -1 })
+      .lean();
 
     res.status(200).json({ success: true, data: categories });
   } catch (error) {

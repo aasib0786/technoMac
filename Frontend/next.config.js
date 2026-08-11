@@ -1,6 +1,9 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  compress: true,
   images: {
+    formats: ['image/avif', 'image/webp'],
+    minimumCacheTTL: 2592000,
     remotePatterns: [
       {
         protocol: "https",
@@ -20,7 +23,7 @@ const nextConfig = {
       },
       {
         protocol: 'https',
-        hostname: 'plus.unsplash.com',   // ← add this
+        hostname: 'plus.unsplash.com',
       },
       {
         protocol: "https",

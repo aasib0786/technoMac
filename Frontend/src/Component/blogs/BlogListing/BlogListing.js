@@ -5,6 +5,8 @@ import Breadcrumb from "../../common/Breadcrumb/Breadcrumb";
 import { getData } from "../../../services/FetchNodeServices";
 import { blogs as fallbackBlogs } from "../../../../Data/blogs";
 
+import SkeletonLoader from "../../common/Loader/SkeletonLoader";
+
 export default function BlogListing() {
   const [blogsList, setBlogsList] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -53,11 +55,7 @@ export default function BlogListing() {
         </div>
 
         {loading ? (
-          <div className="text-center py-5">
-            <div className="spinner-border text-danger" role="status">
-              <span className="visually-hidden">Loading...</span>
-            </div>
-          </div>
+          <SkeletonLoader type="blog" count={8} />
         ) : blogsList.length === 0 ? (
           <div className="text-center py-5">
             <p>No blogs published at the moment.</p>

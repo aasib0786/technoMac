@@ -22,12 +22,15 @@ function StarRating({ rating = 5 }) {
   );
 }
 
+import SkeletonLoader from "../../common/Loader/SkeletonLoader";
+
 export default function ReviewSection() {
   const [reviews, setReviews] = useState([]); // ✅ static as default
   const [loading, setLoading] = useState(true);
 
   const fetchAllReviews = async () => {
     try {
+      setLoading(true);
       const response = await getData("testimonial/"); // ✅ fixed endpoint
       console.log("Reviews Response=>", response);
 
@@ -75,29 +78,32 @@ export default function ReviewSection() {
       <section className={styles.reviewSection}>
         <div className="container">
 
-          {/* HEADER */}
-          <div className={styles.sectionHeader}>
+          {/* HEADING */}
+          <div className={styles.heading}>
             {/* <span>Testimonials</span> */}
             <h2>What Doctors Say About TECHNOMAC</h2>
             <p>Trusted by thousands of dental professionals across India.</p>
           </div>
 
           {/* SLIDER */}
-          <Swiper
-            slidesPerView={3}
-            spaceBetween={30}
-            loop={true}
-            speed={1000}
-            autoplay={{ delay: 2500, disableOnInteraction: false }}
-            pagination={{ clickable: true }}
-            modules={[Autoplay, Pagination]}
-            breakpoints={{
-              0:    { slidesPerView: 1 },
-              768:  { slidesPerView: 2 },
-              1200: { slidesPerView: 3 },
-            }}
-            className={styles.reviewSwiper}
-          >
+          {loading && reviews.length === 0 ? (
+            <SkeletonLoader type="review" count={3} />
+          ) : (
+            <Swiper
+              slidesPerView={3}
+              spaceBetween={30}
+              loop={true}
+              speed={1000}
+              autoplay={{ delay: 2500, disableOnInteraction: false }}
+              pagination={{ clickable: true }}
+              modules={[Autoplay, Pagination]}
+              breakpoints={{
+                0:    { slidesPerView: 1 },
+                768:  { slidesPerView: 2 },
+                1200: { slidesPerView: 3 },
+              }}
+              className={styles.reviewSwiper}
+            >
             {reviews.map((item) => (
               <SwiperSlide key={item._id}>
                 <div className={styles.reviewCard}>
@@ -136,6 +142,7 @@ export default function ReviewSection() {
               </SwiperSlide>
             ))}
           </Swiper>
+          )}
 
         </div>
       </section>

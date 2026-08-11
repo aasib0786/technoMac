@@ -3,8 +3,9 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import { getData } from "../../../services/FetchNodeServices";
 import { Swiper, SwiperSlide } from "swiper/react";
-
 import { Autoplay } from "swiper/modules";
+import { optimizeImageUrl } from "../../../utils/imageOptimizer";
+import SkeletonLoader from "../../common/Loader/SkeletonLoader";
 
 export default function OurClients() {
   const [clients, setClients] = useState([]);
@@ -14,11 +15,14 @@ export default function OurClients() {
     try {
       setIsLoading(true);
       const response = await getData("client/all");
-      console.log("SSS==>CLINT", response)
       if (response?.success) {
         const active = (response.data || [])
           .filter((c) => c.isActive)
-          .sort((a, b) => a.order - b.order);
+          .sort((a, b) => a.order - b.order)
+          .map((c) => ({
+            ...c,
+            image: optimizeImageUrl(c.image, { width: 300 }),
+          }));
         setClients(active);
       }
     } catch (error) {
@@ -52,13 +56,7 @@ export default function OurClients() {
 
         {/* SKELETON */}
         {isLoading && (
-          <div className="row">
-            {Array.from({ length: 6 }).map((_, i) => (
-              <div className="col-lg-2 col-md-4 col-6 mb-4" key={i}>
-                <div className={styles.clientCard} style={{ height: 150, background: "#f0f0f0", animation: "pulse 1.4s ease-in-out infinite" }} />
-              </div>
-            ))}
-          </div>
+          <SkeletonLoader type="client" count={6} />
         )}
 
         {/* EMPTY */}

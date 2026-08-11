@@ -5,7 +5,7 @@ const cloudinary = require('../config/cloudinary');
 const uploadToCloudinary = (buffer, options) =>
   new Promise((resolve, reject) => {
     cloudinary.uploader
-      .upload_stream(options, (error, result) => {
+      .upload_stream({ quality: 'auto', fetch_format: 'auto', ...options }, (error, result) => {
         if (error) reject(error);
         else resolve(result);
       })
@@ -100,7 +100,7 @@ exports.getAllBlogs = async (req, res) => {
     }
 
     // Sort by Featured first (true comes before false), then newest created first
-    const blogs = await Blog.find(filter).sort({ isFeatured: -1, createdAt: -1 });
+    const blogs = await Blog.find(filter).sort({ isFeatured: -1, createdAt: -1 }).lean();
 
     res.status(200).json({ success: true, count: blogs.length, data: blogs });
   } catch (error) {
@@ -112,7 +112,7 @@ exports.getAllBlogs = async (req, res) => {
 // ── GET SINGLE BLOG BY ID ────────────────────────────────────────────────────
 exports.getBlogById = async (req, res) => {
   try {
-    const blog = await Blog.findById(req.params.id);
+    const blog = await Blog.findById(req.params.id).lean();
     if (!blog) return res.status(404).json({ success: false, message: 'Blog not found' });
     res.status(200).json({ success: true, data: blog });
   } catch (error) {
@@ -124,7 +124,7 @@ exports.getBlogById = async (req, res) => {
 // ── GET SINGLE BLOG BY SLUG ──────────────────────────────────────────────────
 exports.getBlogBySlug = async (req, res) => {
   try {
-    const blog = await Blog.findOne({ slug: req.params.slug });
+    const blog = await Blog.findOne({ slug: req.params.slug }).lean();
     if (!blog) return res.status(404).json({ success: false, message: 'Blog not found' });
     res.status(200).json({ success: true, data: blog });
   } catch (error) {

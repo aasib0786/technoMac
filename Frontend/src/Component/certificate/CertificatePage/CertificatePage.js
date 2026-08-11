@@ -20,18 +20,25 @@ import { useEffect, useState } from "react";
 import { getData } from "../../../services/FetchNodeServices";
 
 
+import { optimizeImageUrl } from "../../../utils/imageOptimizer";
+
+import SkeletonLoader from "../../common/Loader/SkeletonLoader";
+
 export default function CertificatePage() {
   const [certificate, setCertificate] = useState([])
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(true)
   const [selectedImage, setSelectedImage] = useState(null);
 
   const fetchAllCertificate = async () => {
     try {
+      setLoading(true);
       const response = await getData("certificate/all");
-      console.log("Certificate Response=>", response)
-      if (response.success === true) {
-
-        setCertificate(response.data);
+      if (response?.success === true && Array.isArray(response?.data)) {
+        const mapped = response.data.map((item) => ({
+          ...item,
+          image: optimizeImageUrl(item.image, { width: 600 }),
+        }));
+        setCertificate(mapped);
       }
     } catch (e) {
       console.error("Certificate fetch failed, using static fallback:", e?.message);
@@ -107,43 +114,47 @@ export default function CertificatePage() {
           </div>
         </div>
 
-        <div className="row">
-          {certificate.map((item, index) => (
-            <div className="col-lg-3 col-md-6 mb-3"
-              key={index}
-            >
-              <div className={styles.certificateCard}>
-                <div
-                  className={styles.frame}
-                  onClick={() => setSelectedImage(item)}
-                >
-                  <div className={styles.verifyBadge}>
-                    Verified
-                    <FaCheckCircle />
+        {loading && certificate.length === 0 ? (
+          <SkeletonLoader type="certificate" count={4} />
+        ) : (
+          <div className="row">
+            {certificate.map((item, index) => (
+              <div className="col-lg-3 col-md-6 mb-3"
+                key={index}
+              >
+                <div className={styles.certificateCard}>
+                  <div
+                    className={styles.frame}
+                    onClick={() => setSelectedImage(item)}
+                  >
+                    <div className={styles.verifyBadge}>
+                      Verified
+                      <FaCheckCircle />
+                    </div>
+
+                    <div className={styles.innerFrame}>
+
+                      <Image
+                        src={item.image}
+                        alt={item.title}
+                        width={1000}
+                        height={420}
+                        className={styles.certificateImage}
+                      />
+
+                    </div>
+
                   </div>
-
-                  <div className={styles.innerFrame}>
-
-                    <Image
-                      src={item.image}
-                      alt={item.title}
-                      width={1000}
-                      height={420}
-                      className={styles.certificateImage}
-                    />
-
+                  <div className={styles.cardContent}>
+                    <h3>
+                      {item.title}
+                    </h3>
                   </div>
-
-                </div>
-                <div className={styles.cardContent}>
-                  <h3>
-                    {item.title}
-                  </h3>
                 </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </div>
       {selectedImage && (
 

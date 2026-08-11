@@ -35,4 +35,9 @@ const SubCategorySchema = new mongoose.Schema(
   { timestamps: true },
 );
 
+// Performance Indexes
+SubCategorySchema.index({ category: 1, isActive: 1 });
+SubCategorySchema.index({ parentCategoryId: 1, isActive: 1 });
+SubCategorySchema.index({ isActive: 1, createdAt: -1 });
+
 exports.SubCategory = mongoose.model('SubCategory', SubCategorySchema);

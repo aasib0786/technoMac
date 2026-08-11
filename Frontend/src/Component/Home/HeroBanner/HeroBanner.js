@@ -12,45 +12,44 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 
 
+import { optimizeImageUrl } from "../../../utils/imageOptimizer";
+
+const defaultStaticBanners = [
+  { image: heroImage1, title: "Precision In Every Smile", desc: "Advanced dental technology engineered for exceptional clinical results." },
+  { image: heroImage2, title: "Modern Clinic Innovations", desc: "Transforming dental practices with ergonomic, reliable equipment." },
+];
+
 export default function HeroBanner() {
-  const [banners, setBanners] = useState([])
-  const [loading, setLoading] = useState(false)
+  const [banners, setBanners] = useState(defaultStaticBanners);
+  const [loading, setLoading] = useState(false);
 
   const fetchAllBanners = async () => {
     try {
-      // ✅ Remove leading slash — getData likely prepends serverURL + "/"
       const response = await getData("banner/all");
-      console.log('response==>',response)
-      if (response.success === true) {
-        // ✅ Map API response to the shape our UI expects
+      if (response?.success === true && Array.isArray(response?.banners) && response.banners.length > 0) {
         const mapped = response.banners.map((item) => ({
-          image: item.imageUrl || item.image || item.banner_image,
+          image: optimizeImageUrl(item.imageUrl || item.image || item.banner_image),
           category: item?.categoryId || {},
           subCategory: item?.subCategoryId || {},
           title: item.title || item.banner_title || "",
           desc: item.desc || item.description || item.subtitle || "",
-          isRemote: item.isActive || true, // flag to use <img> instead of next/image for remote URLs
+          isRemote: item.isActive || true,
         }));
         setBanners(mapped);
       }
-      // If empty or null → keep static fallback already in state
     } catch (e) {
       console.error("Banner fetch failed, using static fallback:", e?.message);
-      // ✅ Static banners already set as default — nothing extra needed
     } finally {
       setLoading(false);
     }
   };
 
-  // ✅ useEffect instead of useState
   useEffect(() => {
     fetchAllBanners();
   }, []);
-  console.log("SSSS==>response", banners)
+
   return (
-
     <section className={styles.heroSection}>
-
       <Swiper
         modules={[
           Autoplay,
@@ -67,20 +66,16 @@ export default function HeroBanner() {
         speed={1200}
         className={styles.heroSwiper}
       >
-
         {banners.map((item, index) => (
-
           <SwiperSlide key={index}>
-
             <div className={styles.bannerItem}>
-
               {/* IMAGE */}
-
               <Image
                 src={item.image}
-                alt="Dental Banner"
+                alt={item.title || "Dental Banner"}
                 fill
-                priority
+                priority={index === 0}
+                sizes="100vw"
                 className={styles.bannerImage}
               />
 

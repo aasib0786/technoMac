@@ -15,7 +15,7 @@ exports.createCertificate = async (req, res) => {
 
     const result = await new Promise((resolve, reject) => {
       cloudinary.uploader
-        .upload_stream({ folder: 'certificates' }, (error, result) => {
+        .upload_stream({ folder: 'certificates', quality: 'auto', fetch_format: 'auto' }, (error, result) => {
           if (error) reject(error);
           else resolve(result);
         })
@@ -45,7 +45,7 @@ exports.getAllCertificates = async (req, res) => {
   try {
     const certificates = await Certificate.find().sort({
       createdAt: -1,
-    });
+    }).lean();
 
     res.status(200).json({
       success: true,
@@ -63,7 +63,7 @@ exports.getAllCertificates = async (req, res) => {
 // GET SINGLE
 exports.getCertificateById = async (req, res) => {
   try {
-    const certificate = await Certificate.findById(req.params.id);
+    const certificate = await Certificate.findById(req.params.id).lean();
 
     if (!certificate) {
       return res.status(404).json({

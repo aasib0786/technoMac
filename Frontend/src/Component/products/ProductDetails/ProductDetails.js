@@ -10,6 +10,9 @@ import { useEffect, useState } from "react";
 import Breadcrumb from "../../common/Breadcrumb/Breadcrumb";
 import { useSearchParams } from "next/navigation";
 import { getData } from "../../../services/FetchNodeServices";
+import { optimizeImageUrl } from "../../../utils/imageOptimizer";
+
+import SkeletonLoader from "../../common/Loader/SkeletonLoader";
 
 // Helper to convert product name to clean URL slug without %20
 const toSlug = (text) => {
@@ -28,6 +31,7 @@ export default function ProductDetails() {
   const productIdentifier = router?.query?.slug || searchParams?.get("productId") || router?.query?.productId;
 
   const [product, setProduct] = useState({});
+  const [loading, setLoading] = useState(true);
   const [relatedProducts, setRelatedProducts] = useState([]);
   const [activeImage, setActiveImage] = useState("");
   const [zoomStyle, setZoomStyle] = useState({
@@ -56,6 +60,7 @@ export default function ProductDetails() {
 
   const fetchProduct = async () => {
     if (!productIdentifier) return;
+    setLoading(true);
     try {
       let response = await getData(`product/${encodeURIComponent(productIdentifier)}`);
       if (response?.success === true && response?.data) {
@@ -66,6 +71,8 @@ export default function ProductDetails() {
       }
     } catch (e) {
       console.error("fetchProduct error:", e);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -91,12 +98,13 @@ export default function ProductDetails() {
     }
   }, [product?.category?._id]);
 
-  const galleryImages =
+  const rawGallery =
     Array.isArray(product.images) && product.images.length > 0
       ? product.images
       : product.image
         ? [product.image]
         : [];
+  const galleryImages = rawGallery.map((img) => optimizeImageUrl(img, { width: 1000 }));
 
   const filterRelatedProducts = relatedProducts.filter((item) => item?._id !== product?._id);
 
@@ -215,7 +223,10 @@ export default function ProductDetails() {
         <div className="container">
           <Breadcrumb pageName={product?.name || "Product Details"} />
 
-          <div className="row">
+          {loading ? (
+            <SkeletonLoader type="detail" />
+          ) : (
+            <div className="row">
             <div className="col-lg-6">
               <div className={styles.imageWrapper}>
                 <div
@@ -315,6 +326,7 @@ export default function ProductDetails() {
               </div>
             </div>
           </div>
+          )}
 
           {filterRelatedProducts.length > 0 && (
             <div className={styles.relatedSection}>

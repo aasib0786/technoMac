@@ -70,7 +70,15 @@ const ProductSchema = new mongoose.Schema(
     isFeatured: { type: Boolean, default: false },
   },
   { timestamps: true },
-);
+)
+// Performance Indexes for high-speed queries
+ProductSchema.index({ slug: 1 });
+ProductSchema.index({ isActive: 1, createdAt: -1 });
+ProductSchema.index({ category: 1, isActive: 1, createdAt: -1 });
+ProductSchema.index({ subCategory: 1, isActive: 1, createdAt: -1 });
+ProductSchema.index({ parentCategoryId: 1, isActive: 1, createdAt: -1 });
+ProductSchema.index({ isFeatured: 1, isActive: 1 });
+ProductSchema.index({ name: 1 });
 
 const Product = mongoose.model('Product', ProductSchema);
 

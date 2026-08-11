@@ -210,7 +210,7 @@ exports.createSubscriber = async (req, res) => {
 // ─────────────────────────────────────────────
 exports.getAllSubscribers = async (req, res) => {
     try {
-        const subscribers = await Subscriber.find().sort({ subscribedAt: -1 });
+        const subscribers = await Subscriber.find().sort({ subscribedAt: -1 }).lean();
         res.status(200).json({
             success: true,
             count: subscribers.length,

@@ -43,4 +43,7 @@ const TestimonialSchema = new mongoose.Schema(
   { timestamps: true },
 );
 
+// Performance Indexes
+TestimonialSchema.index({ isActive: 1, order: 1, createdAt: -1 });
+
 exports.Testimonial = mongoose.model('Testimonial', TestimonialSchema);

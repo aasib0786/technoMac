@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import Head from "next/head";
 import Layout from "../../Component/layout/Layout";
 import BlogDetails from "../../Component/blogs/BlogDetails/BlogDetails";
+import SkeletonLoader from "../../Component/common/Loader/SkeletonLoader";
 import { getData } from "../../services/FetchNodeServices";
 import { blogs as fallbackBlogs } from "../../../Data/blogs";
 
@@ -122,8 +123,8 @@ export default function BlogDetailPage() {
           <title>Loading Article... | TECHNOMAC</title>
         </Head>
         <Layout>
-          <div style={{ textAlign: "center", padding: "100px 0" }}>
-            <p>Loading blog details...</p>
+          <div style={{ padding: "60px 0" }}>
+            <SkeletonLoader type="detail" />
           </div>
         </Layout>
       </>

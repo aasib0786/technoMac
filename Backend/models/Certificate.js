@@ -16,4 +16,7 @@ const certificateSchema = new mongoose.Schema(
   },
 );
 
+// Performance Indexes
+certificateSchema.index({ createdAt: -1 });
+
 module.exports = mongoose.model('Certificate', certificateSchema);

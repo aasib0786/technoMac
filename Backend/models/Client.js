@@ -27,4 +27,7 @@ const ClientSchema = new mongoose.Schema(
     { timestamps: true }
 );
 
+// Performance Indexes
+ClientSchema.index({ isActive: 1, order: 1, createdAt: -1 });
+
 exports.Client = mongoose.model("Client", ClientSchema);

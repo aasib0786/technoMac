@@ -1,6 +1,11 @@
 import Link from "next/link";
+import Image from "next/image";
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/router";
+import styles from "./Header.module.css";
+import logo from "../../../../Images/logo-chat.png";
+import { getData } from "../../../services/FetchNodeServices";
+import AttractiveLoader from "../../common/Loader/AttractiveLoader";
 import {
   FaBars,
   FaTimes,
@@ -14,10 +19,6 @@ import {
   FaSearch,
   FaSpinner,
 } from "react-icons/fa";
-import styles from "./Header.module.css";
-import logo from "../../../../Images/logo-chat.png";
-import Image from "next/image";
-import { getData } from "../../../services/FetchNodeServices";
 
 export default function Header() {
   const router = useRouter();
@@ -322,7 +323,9 @@ export default function Header() {
 
                       <div className={styles.productGrid}>
                         {loadingSubCategories ? (
-                          <p className={styles.loadingText}>Loading...</p>
+                          <div style={{ gridColumn: "1 / -1", padding: "20px 0" }}>
+                            <AttractiveLoader size="sm" text="Loading categories..." />
+                          </div>
                         ) : subCategories.length > 0 ? (
                           subCategories.map((sub) => (
                             <Link

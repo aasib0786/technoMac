@@ -14,7 +14,7 @@ const generateSlug = (name) =>
 const uploadToCloudinary = (buffer, options) =>
     new Promise((resolve, reject) => {
         cloudinary.uploader
-            .upload_stream(options, (error, result) => {
+            .upload_stream({ quality: 'auto', fetch_format: 'auto', ...options }, (error, result) => {
                 if (error) reject(error);
                 else resolve(result);
             })
@@ -93,7 +93,7 @@ exports.createNewUpdate = async (req, res) => {
 // ── GET ALL ──────────────────────────────────────────────────────
 exports.getAllNewUpdates = async (req, res) => {
     try {
-        const newUpdates = await NewUpdate.find().sort({ createdAt: -1 });
+        const newUpdates = await NewUpdate.find().sort({ createdAt: -1 }).lean();
 
         res.status(200).json({
             success: true,
@@ -108,7 +108,7 @@ exports.getAllNewUpdates = async (req, res) => {
 // ── GET SINGLE BY ID ─────────────────────────────────────────────
 exports.getNewUpdateById = async (req, res) => {
     try {
-        const newUpdate = await NewUpdate.findById(req.params.id);
+        const newUpdate = await NewUpdate.findById(req.params.id).lean();
 
         if (!newUpdate) {
             return res.status(404).json({
@@ -126,7 +126,7 @@ exports.getNewUpdateById = async (req, res) => {
 // ── GET SINGLE BY SLUG ───────────────────────────────────────────
 exports.getNewUpdateBySlug = async (req, res) => {
     try {
-        const newUpdate = await NewUpdate.findOne({ slug: req.params.slug });
+        const newUpdate = await NewUpdate.findOne({ slug: req.params.slug }).lean();
 
         if (!newUpdate) {
             return res.status(404).json({
@@ -152,7 +152,7 @@ exports.getBySubTitle = async (req, res) => {
 
         const newUpdate = await NewUpdate.findOne({
             subTitle: { $regex: new RegExp(`^${subTitle.trim()}$`, 'i') },
-        });
+        }).lean();
 
         if (!newUpdate) {
             return res.status(404).json({

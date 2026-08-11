@@ -43,7 +43,8 @@ exports.getAllDownloads = async (req, res) => {
   try {
     const downloads = await CatalogueDownload.find()
       .populate('catalogueId')
-      .sort({ createdAt: -1 });
+      .sort({ createdAt: -1 })
+      .lean();
 
     res.status(200).json({
       success: true,
@@ -60,9 +61,9 @@ exports.getAllDownloads = async (req, res) => {
 
 exports.getDownloadById = async (req, res) => {
   try {
-    const download = await CatalogueDownload.findById(req.params.id).populate(
-      'catalogueId',
-    );
+    const download = await CatalogueDownload.findById(req.params.id)
+      .populate('catalogueId')
+      .lean();
 
     if (!download) {
       return res.status(404).json({

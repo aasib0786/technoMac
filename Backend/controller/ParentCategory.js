@@ -5,7 +5,7 @@ const cloudinary = require('../config/cloudinary');
 const uploadToCloudinary = (buffer, folder) =>
     new Promise((resolve, reject) => {
         cloudinary.uploader
-            .upload_stream({ folder }, (error, result) => {
+            .upload_stream({ folder, quality: 'auto', fetch_format: 'auto' }, (error, result) => {
                 if (error) reject(error);
                 else resolve(result);
             })
@@ -50,7 +50,7 @@ exports.createParentCategory = async (req, res) => {
 exports.getAllParentCategory = async (req, res) => {
     try {
         // ✅ FIX: get ALL (admin needs inactive ones too) — remove isActive filter
-        const categories = await ParentCategory.find().sort({ createdAt: -1 });
+        const categories = await ParentCategory.find().sort({ createdAt: -1 }).lean();
         res.status(200).json({ success: true, data: categories });
     } catch (error) {
         console.error('getAllParentCategory:', error);
@@ -62,7 +62,7 @@ exports.getAllParentCategory = async (req, res) => {
 
 exports.getParentCategoryById = async (req, res) => {
     try {
-        const category = await ParentCategory.findById(req.params.id);
+        const category = await ParentCategory.findById(req.params.id).lean();
         if (!category) {
             return res.status(404).json({ success: false, message: 'Parent Category not found' });
         }

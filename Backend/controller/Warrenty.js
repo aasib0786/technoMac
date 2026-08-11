@@ -77,7 +77,7 @@ exports.registerWarranty = async (req, res) => {
 // ══════════════════════════════════════════════════════════════════
 exports.getAllWarranties = async (req, res) => {
   try {
-    const warranties = await Warranty.find().sort({ createdAt: -1 });
+    const warranties = await Warranty.find().sort({ createdAt: -1 }).lean();
     res.status(200).json({ success: true, data: warranties });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
@@ -89,7 +89,7 @@ exports.getAllWarranties = async (req, res) => {
 // ══════════════════════════════════════════════════════════════════
 exports.getWarrantyById = async (req, res) => {
   try {
-    const warranty = await Warranty.findById(req.params.id);
+    const warranty = await Warranty.findById(req.params.id).lean();
     if (!warranty)
       return res
         .status(404)

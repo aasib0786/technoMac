@@ -209,7 +209,7 @@
 
   z-index: 2;
 
-  height: 220px;
+  height: 260px;
 
   border-radius: 28px;
 
@@ -252,7 +252,7 @@
   object-fit: cover;
   width: 200px;
   max-width: 200px;
-  height: 200px;
+  height: 240px;
   transition: all .5s;
   position: relative;
   border-radius: 27px;

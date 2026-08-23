@@ -335,7 +335,7 @@ export default function ProductDetails() {
                 <h2>Explore More Equipment</h2>
               </div>
               <Swiper
-                slidesPerView={3}
+                slidesPerView={4}
                 spaceBetween={24}
                 navigation={true}
                 modules={[Navigation]}

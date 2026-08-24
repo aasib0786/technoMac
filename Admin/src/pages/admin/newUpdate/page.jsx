@@ -630,9 +630,23 @@ export default function NewUpdateManagement() {
 
                                                 {/* Custom URL Slug */}
                                                 <div>
-                                                    <label className="block text-sm font-semibold text-gray-700 mb-1">
-                                                        Custom URL Slug (Optional)
-                                                    </label>
+                                                    <div className="flex justify-between items-center mb-1">
+                                                        <label className="block text-sm font-semibold text-gray-700">
+                                                            Custom URL Slug (Optional)
+                                                        </label>
+                                                        <button
+                                                            type="button"
+                                                            onClick={() =>
+                                                                setFormData((prev) => ({
+                                                                    ...prev,
+                                                                    slug: generateSlugFromName(prev.title || prev.subTitle || ''),
+                                                                }))
+                                                            }
+                                                            className="text-xs text-blue-600 hover:text-blue-700 font-semibold hover:underline flex items-center gap-1 bg-blue-50 hover:bg-blue-100 border border-blue-200 px-2 py-0.5 rounded transition-colors"
+                                                        >
+                                                            <i className="ri-magic-line"></i> Auto-generate from Name
+                                                        </button>
+                                                    </div>
                                                     <input
                                                         type="text"
                                                         placeholder="e.g. advanced-dental-chair-technology"

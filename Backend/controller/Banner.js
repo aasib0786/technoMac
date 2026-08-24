@@ -15,7 +15,7 @@ const uploadToCloudinary = (buffer) =>
 // ─── CREATE BANNER ───────────────────────────────────────────────────────────
 exports.createBanner = async (req, res) => {
   try {
-    const { title, subtitle, buttonText, categoryId ,subCategoryId} = req.body;
+    const { title, subtitle, buttonText, categoryId, subCategoryId, deviceType } = req.body;
 
     if (!categoryId && !subCategoryId) {
       return res
@@ -37,6 +37,7 @@ exports.createBanner = async (req, res) => {
       title,
       subtitle,
       buttonText,
+      deviceType: deviceType || 'desktop',
       image: result.secure_url,
     });
 
@@ -81,7 +82,7 @@ exports.getBannerByCategory = async (req, res) => {
 // ─── UPDATE BANNER ───────────────────────────────────────────────────────────
 exports.updateBanner = async (req, res) => {
   try {
-    const { categoryId, title, subtitle, buttonText,subCategoryId } = req.body;
+    const { categoryId, title, subtitle, buttonText, subCategoryId, deviceType } = req.body;
 
     if (!categoryId && !subCategoryId) {
       return res
@@ -89,7 +90,10 @@ exports.updateBanner = async (req, res) => {
         .json({ success: false, message: 'Category is required' });
     }
 
-    const updateData = { categoryId,subCategoryId, title, subtitle, buttonText };
+    const updateData = { categoryId, subCategoryId, title, subtitle, buttonText };
+    if (deviceType) {
+      updateData.deviceType = deviceType;
+    }
 
     if (req.file) {
       const result = await uploadToCloudinary(req.file.buffer);

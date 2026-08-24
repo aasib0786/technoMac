@@ -22,6 +22,16 @@ const defaultStaticBanners = [
 export default function HeroBanner() {
   const [banners, setBanners] = useState(defaultStaticBanners);
   const [loading, setLoading] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   const fetchAllBanners = async () => {
     try {
@@ -33,6 +43,7 @@ export default function HeroBanner() {
           subCategory: item?.subCategoryId || {},
           title: item.title || item.banner_title || "",
           desc: item.desc || item.description || item.subtitle || "",
+          deviceType: item.deviceType || "desktop",
           isRemote: item.isActive || true,
         }));
         setBanners(mapped);
@@ -48,9 +59,18 @@ export default function HeroBanner() {
     fetchAllBanners();
   }, []);
 
+  // Filter banners according to target device view (Desktop vs Mobile)
+  const displayBanners = banners.filter((item) => {
+    if (!item.deviceType || item.deviceType === "all") return true;
+    return isMobile ? item.deviceType === "mobile" : item.deviceType === "desktop";
+  });
+
+  const activeBannersList = displayBanners.length > 0 ? displayBanners : banners;
+
   return (
     <section className={styles.heroSection}>
       <Swiper
+        key={isMobile ? "mobile-swiper" : "desktop-swiper"}
         modules={[
           Autoplay,
           Pagination,
@@ -66,7 +86,7 @@ export default function HeroBanner() {
         speed={1200}
         className={styles.heroSwiper}
       >
-        {banners.map((item, index) => (
+        {activeBannersList.map((item, index) => (
           <SwiperSlide key={index}>
             <div className={styles.bannerItem}>
               {/* IMAGE */}

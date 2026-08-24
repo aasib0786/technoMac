@@ -28,6 +28,11 @@ const BannerSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    deviceType: {
+      type: String,
+      enum: ['desktop', 'mobile', 'all'],
+      default: 'desktop',
+    },
     isActive: {
       type: Boolean,
       default: true,

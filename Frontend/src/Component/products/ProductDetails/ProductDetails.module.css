@@ -93,15 +93,19 @@
 
 .sectionBox ul li {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 12px;
   margin-bottom: 18px;
   color: #444;
   font-size: 15px;
+  line-height: 1.6;
 }
 
 .sectionBox ul li svg {
   color: var(--theme-color);
+  flex-shrink: 0;
+  margin-top: 4px;
+  font-size: 16px;
 }
 
 /* SPEC GRID */

@@ -476,6 +476,26 @@ export default function Header() {
                 <Link href="/updates" onClick={() => setMenuOpen(false)}>New Updates</Link>
                 <Link href="/contact" onClick={() => setMenuOpen(false)}>Contact Us</Link>
 
+                {/* MOBILE ACTION BUTTONS */}
+                <div className={styles.mobileActionsWrapper}>
+                  <Link
+                    href="/warranty-registration"
+                    onClick={() => setMenuOpen(false)}
+                    className={styles.mobileWarrantyBtn}
+                  >
+                    Extend Warranty
+                  </Link>
+                  <a
+                    href="https://razorpay.me/@technomacmedicalsystemspvtltd"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={() => setMenuOpen(false)}
+                    className={styles.mobilePayBtn}
+                  >
+                    Pay Now
+                  </a>
+                </div>
+
                 <button className={styles.closeBtn} onClick={() => setMenuOpen(false)} aria-label="Close menu">
                   <FaTimes />
                 </button>

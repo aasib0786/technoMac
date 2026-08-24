@@ -608,6 +608,7 @@ const emptyForm = {
   subCategoryId: '',
   title: '',
   subtitle: '',
+  deviceType: 'desktop',
   image: null,
 };
 
@@ -714,6 +715,7 @@ export default function BannersManagement() {
       data.append('subCategoryId', formData.subCategoryId);
       data.append('title', formData.title);
       data.append('subtitle', formData.subtitle || '');
+      data.append('deviceType', formData.deviceType || 'desktop');
       if (formData.image instanceof File) {
         data.append('image', formData.image);
       }
@@ -749,6 +751,7 @@ export default function BannersManagement() {
       subCategoryId: banner.subCategoryId?._id || '',
       title: banner.title || '',
       subtitle: banner.subtitle || '',
+      deviceType: banner.deviceType || 'desktop',
       image: banner.image || null,
     });
     setShowAddModal(true);
@@ -900,11 +903,10 @@ export default function BannersManagement() {
                       <button
                         key={page}
                         onClick={() => setCurrentPage(page)}
-                        className={`px-3 py-1.5 rounded-lg border text-sm font-medium transition-colors ${
-                          currentPage === page
+                        className={`px-3 py-1.5 rounded-lg border text-sm font-medium transition-colors ${currentPage === page
                             ? 'bg-blue-600 text-white border-blue-600'
                             : 'hover:bg-gray-100'
-                        }`}
+                          }`}
                       >
                         {page}
                       </button>
@@ -996,8 +998,8 @@ export default function BannersManagement() {
                             {!formData.categoryId
                               ? 'Select category first'
                               : subCategories.length === 0
-                              ? 'No subcategories'
-                              : 'Select Sub-Category'}
+                                ? 'No subcategories'
+                                : 'Select Sub-Category'}
                           </option>
                           {subCategories.map((sub) => (
                             <option key={sub._id} value={sub._id}>
@@ -1007,6 +1009,26 @@ export default function BannersManagement() {
                         </select>
                         <i className="ri-arrow-down-s-line absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"></i>
                       </div>
+                    </div>
+                  </div>
+
+                  {/* Device Type (deviceType) */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Device Type (deviceType) <span className="text-red-500">*</span>
+                    </label>
+                    <div className="relative">
+                      <select
+                        value={formData.deviceType || 'desktop'}
+                        onChange={(e) => setFormData({ ...formData, deviceType: e.target.value })}
+                        className="w-full px-3 py-2 pr-8 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 appearance-none text-sm bg-white font-medium text-gray-800"
+                        required
+                      >
+                        <option value="desktop">💻 Desktop View Only (1920 × 600 px)</option>
+                        <option value="mobile">📱 Mobile View Only (600 × 800 px)</option>
+                        <option value="all">🖥️📱 Both Desktop & Mobile Views</option>
+                      </select>
+                      <i className="ri-arrow-down-s-line absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"></i>
                     </div>
                   </div>
 

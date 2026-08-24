@@ -23,7 +23,7 @@
 .imageWrapper {
   position: relative;
   width: 100%;
-  height: 210px;
+  height: 240px;
   overflow: hidden;
   background-color: #f1f5f9;
 }
@@ -135,7 +135,7 @@
 /* RESPONSIVE DESIGN */
 @media (max-width: 576px) {
   .imageWrapper {
-    height: 170px;
+    height: 220px;
   }
 
   .content {

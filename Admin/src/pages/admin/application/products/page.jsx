@@ -998,9 +998,14 @@ export default function ProductsManagement() {
 
                 {/* ── CARD 4: MEDIA GALLERY ── */}
                 <div className="bg-white p-5 rounded-xl border border-gray-200 shadow-sm space-y-3">
-                  <div className="flex items-center gap-2 border-b pb-3 text-sm font-bold text-gray-900">
-                    <i className="ri-image-add-fill text-blue-600 text-base"></i>
-                    Product Media & Images
+                  <div className="flex flex-wrap items-center justify-between gap-2 border-b pb-3 text-sm font-bold text-gray-900">
+                    <div className="flex items-center gap-2">
+                      <i className="ri-image-add-fill text-blue-600 text-base"></i>
+                      <span>Product Media & Images</span>
+                    </div>
+                    <span className="text-xs font-semibold text-blue-700 bg-blue-50 px-2.5 py-1 rounded-md border border-blue-200 shadow-2xs">
+                      📷 Recommended Size: <strong>450 × 450 px</strong> (Square 1:1 Ratio)
+                    </span>
                   </div>
 
                   <div>
@@ -1018,7 +1023,8 @@ export default function ProductsManagement() {
                     >
                       <i className="ri-cloud-upload-line text-3xl text-gray-400 mb-1 block"></i>
                       <span className="text-xs font-bold text-gray-700 block">Click or Drag images to upload</span>
-                      <span className="text-[11px] text-gray-400">PNG, JPG, WEBP up to 5MB</span>
+                      <span className="text-xs text-blue-600 font-semibold block mt-0.5">Recommended Resolution: 1000 × 1000 pixels (1:1 Ratio)</span>
+                      <span className="text-[11px] text-gray-400">PNG, JPG, WEBP supported</span>
                     </div>
 
                     {formData.images.length > 0 && (

@@ -1,5 +1,5 @@
 .blogSection {
-  padding: 60px 0 80px;
+  padding: 100px 0 80px;
   background: #f8fafc;
 }
 
@@ -24,17 +24,23 @@
   line-height: 1.6;
 }
 
+@media(max-width: 991px) {
+  .blogSection {
+    padding: 130px 0 60px;
+  }
+}
+
 @media(max-width: 576px) {
   .heading {
     margin-bottom: 24px;
   }
 
   .blogSection {
-    padding: 40px 0 60px;
+    padding: 130px 0 60px;
   }
 
   .heading h2 {
-    font-size: 24px;
+    font-size: 22px;
   }
 
   .subHeading {

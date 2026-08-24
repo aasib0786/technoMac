@@ -1,7 +1,7 @@
 import axios from 'axios';
 
-// const serverURL = 'http://localhost:8000/api';
-const serverURL = 'https://api.technomacmedical.com/api';
+const serverURL = 'http://localhost:8000/api';
+// const serverURL = 'https://api.technomacmedical.com/api';
 
 // In-memory cache & in-flight request deduplication
 const apiCache = new Map();

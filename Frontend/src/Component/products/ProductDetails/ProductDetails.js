@@ -227,7 +227,7 @@ export default function ProductDetails() {
             <SkeletonLoader type="detail" />
           ) : (
             <div className="row">
-            <div className="col-lg-6">
+            <div className="col-lg-5">
               <div className={styles.imageWrapper}>
                 <div
                   className={styles.mainImage}
@@ -273,7 +273,7 @@ export default function ProductDetails() {
               </div>
             </div>
 
-            <div className="col-lg-6">
+            <div className="col-lg-7">
               <div className={styles.content}>
                 <span className="hero-tag">{product?.category?.name}</span>
                 <h1>{product?.name}</h1>
@@ -341,32 +341,35 @@ export default function ProductDetails() {
                 modules={[Navigation]}
                 breakpoints={{
                   0: {
-                    slidesPerView: 1,
-                  },
-                  768: {
                     slidesPerView: 2,
                   },
-                  1200: {
+                  768: {
                     slidesPerView: 3,
+                  },
+                  1200: {
+                    slidesPerView: 4,
                   },
                 }}
               >
                 {filterRelatedProducts?.map((item) => (
                   <SwiperSlide key={item._id || item.id}>
                     <div className={styles.relatedCard}>
-                      <div className="globalProductCard">
+                      <div className={styles.relatedImage}>
                         {item.images?.[0] ? (
                           <Image
                             src={item.images[0]}
                             alt={item.name}
-                            width={250}
-                            height={200}
+                            width={300}
+                            height={250}
+                            className={styles.relatedProductImage}
                           />
                         ) : null}
+                      </div>
+                      <div className={styles.relatedContent}>
                         <span>{item?.category?.name}</span>
                         <h3>{item.name}</h3>
                         {/* <p>{item?.description}</p> */}
-                        <Link href={`/product/${item?.slug || toSlug(item?.name) || item._id}`}>
+                        <Link href={`/product/${item?.slug || toSlug(item?.name) || item._id}`} >
                           <button>View Details</button>
                         </Link>
                       </div>

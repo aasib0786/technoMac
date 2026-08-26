@@ -106,7 +106,7 @@ exports.updateTestimonial = async (req, res) => {
     const testimonial = await Testimonial.findByIdAndUpdate(
       req.params.id,
       updateData,
-      { new: true },
+      { returnDocument: 'after' },
     );
     if (!testimonial)
       return res

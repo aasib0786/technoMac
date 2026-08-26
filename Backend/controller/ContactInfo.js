@@ -45,7 +45,7 @@ exports.updateContactInfo = async (req, res) => {
 
     if (contactInfo) {
       contactInfo = await ContactInfo.findByIdAndUpdate(contactInfo._id, updateFields, {
-        new: true,
+        returnDocument: 'after',
         runValidators: true,
       });
     } else {

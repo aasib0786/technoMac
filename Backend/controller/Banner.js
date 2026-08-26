@@ -101,7 +101,7 @@ exports.updateBanner = async (req, res) => {
     }
 
     const banner = await Banner.findByIdAndUpdate(req.params.id, updateData, {
-      new: true,
+      returnDocument: 'after',
     }).populate('categoryId', 'name image').populate('subCategoryId');
 
     if (!banner) {

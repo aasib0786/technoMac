@@ -122,7 +122,7 @@ exports.updateClient = async (req, res) => {
             updateData.image = result.secure_url;
         }
 
-        const client = await Client.findByIdAndUpdate(req.params.id, updateData, { new: true });
+        const client = await Client.findByIdAndUpdate(req.params.id, updateData, { returnDocument: 'after' });
         if (!client) {
             return res.status(404).json({ success: false, message: 'Client not found' });
         }

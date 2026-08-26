@@ -120,7 +120,7 @@ exports.updateCertificate = async (req, res) => {
         image,
       },
       {
-        new: true,
+        returnDocument: 'after',
         runValidators: true,
       },
     );

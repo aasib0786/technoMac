@@ -216,7 +216,7 @@ exports.updateNewUpdate = async (req, res) => {
         const updated = await NewUpdate.findByIdAndUpdate(
             req.params.id,
             updateData,
-            { new: true, runValidators: true },
+            { returnDocument: 'after', runValidators: true },
         );
 
         res.status(200).json({

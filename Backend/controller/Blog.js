@@ -193,7 +193,7 @@ exports.updateBlog = async (req, res) => {
       updateData.image = uploadRes.secure_url;
     }
 
-    const updatedBlog = await Blog.findByIdAndUpdate(req.params.id, updateData, { new: true, runValidators: true });
+    const updatedBlog = await Blog.findByIdAndUpdate(req.params.id, updateData, { returnDocument: 'after', runValidators: true });
 
     res.status(200).json({ success: true, message: 'Blog updated successfully', data: updatedBlog });
   } catch (error) {

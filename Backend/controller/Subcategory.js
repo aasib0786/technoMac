@@ -217,7 +217,7 @@ exports.updateSubCategory = async (req, res) => {
     }
 
     const subCategory = await populateSubCategory(
-      SubCategory.findByIdAndUpdate(req.params.id, updateData, { new: true, runValidators: true })
+      SubCategory.findByIdAndUpdate(req.params.id, updateData, { returnDocument: 'after', runValidators: true })
     );
 
     if (!subCategory) {

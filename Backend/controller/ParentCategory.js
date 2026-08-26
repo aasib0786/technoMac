@@ -97,7 +97,7 @@ exports.updateParentCategory = async (req, res) => {
         const category = await ParentCategory.findByIdAndUpdate(
             req.params.id,
             updateData,
-            { new: true, runValidators: true }
+            { returnDocument: 'after', runValidators: true }
         );
 
         if (!category) {

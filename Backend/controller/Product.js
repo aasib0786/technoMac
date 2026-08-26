@@ -426,7 +426,7 @@ exports.updateProduct = async (req, res) => {
     if (Object.keys(unsetData).length > 0) updateOps.$unset = unsetData;
 
     const product = await populateProduct(
-      Product.findByIdAndUpdate(req.params.id, updateOps, { new: true, runValidators: true })
+      Product.findByIdAndUpdate(req.params.id, updateOps, { returnDocument: 'after', runValidators: true })
     );
     if (!product) return res.status(404).json({ success: false, message: 'Product not found' });
 

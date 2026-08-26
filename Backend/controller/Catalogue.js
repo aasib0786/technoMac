@@ -134,7 +134,7 @@ exports.updateCatalogue = async (req, res) => {
     const updated = await Catalogue.findByIdAndUpdate(
       req.params.id,
       updateData,
-      { new: true, runValidators: true },
+      { returnDocument: 'after', runValidators: true },
     );
 
     res.status(200).json({

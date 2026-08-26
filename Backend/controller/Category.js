@@ -174,7 +174,7 @@ exports.updateCategory = async (req, res) => {
     const category = await Category.findByIdAndUpdate(
       req.params.id,
       updateData,
-      { new: true, runValidators: true }
+      { returnDocument: 'after', runValidators: true }
     ).populate('parentCategoryId', 'name');
 
     if (!category) {

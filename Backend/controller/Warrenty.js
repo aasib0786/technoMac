@@ -133,7 +133,7 @@ exports.updateWarrantyStatus = async (req, res) => {
     const warranty = await Warranty.findByIdAndUpdate(
       req.params.id,
       { status },
-      { new: true },
+      { returnDocument: 'after' },
     );
 
     if (!warranty)

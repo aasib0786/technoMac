@@ -245,7 +245,7 @@ exports.updateCallBackStatus = async (req, res) => {
         const callBack = await CallBack.findByIdAndUpdate(
             req.params.id,
             { status },
-            { new: true }
+            { returnDocument: 'after' }
         );
         if (!callBack) {
             return res.status(404).json({ success: false, message: 'Call back request not found' });
@@ -305,7 +305,7 @@ exports.updateCallBack = async (req, res) => {
         const callBack = await CallBack.findByIdAndUpdate(
             req.params.id,
             updatedData,
-            { new: true, runValidators: true }
+            { returnDocument: 'after', runValidators: true }
         );
 
         if (!callBack) {

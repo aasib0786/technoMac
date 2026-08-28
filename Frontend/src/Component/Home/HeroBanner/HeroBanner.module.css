@@ -12,19 +12,11 @@
 /* BANNER */
 
 .bannerItem {
-
   position: relative;
-
-  width: 100%;
-
-  height: 82vh;
-
-  min-height: 620px;
-
+  width: 100%; 
+  min-height: 570px;
   display: flex;
-
   align-items: center;
-
   overflow: hidden;
 }
 

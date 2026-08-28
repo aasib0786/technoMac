@@ -7,8 +7,8 @@
 .imageWrapper {
   position: sticky;
   top: 140px;
-  max-width: 480px;
-  margin: 0 auto;
+  max-width: 400px;
+  margin: 0;
 }
 
 .mainImage {
@@ -153,10 +153,10 @@
 
 .mainProductImage {
   width: 100%;
-  height: auto !important;
+  height: 400px !important;
   display: block;
   border-radius: 24px;
-  object-fit: cover;
+  object-fit: contain;
   transition: transform .08s linear;
   will-change: transform;
 }
@@ -425,14 +425,14 @@
 @media(max-width: 991px) {
 
   .detailsPage {
-    padding: 130px 0 70px;
+    padding: 100px 0 70px;
   }
 
   .imageWrapper {
     position: relative;
     top: 0;
     margin-bottom: 20px;
-    
+    width: 350px;
   }
 
   .content {
